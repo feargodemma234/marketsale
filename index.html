@@ -3,71 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Market Listing Payment - $2 USDT</title>
+  <title>Market Listing Payment</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
 </head>
-<body class="bg-gray-950 text-white flex items-center justify-center min-h-screen p-4">
+<body class="bg-[#0B0E13] text-white flex items-center justify-center min-h-screen p-4">
   
-  <div class="bg-gray-900 w-full max-w-md rounded-2xl shadow-2xl p-6 border border-gray-800">
+  <div class="bg-[#161A20] w-full max-w-md rounded-3xl shadow-2xl p-8 border border-[#2A313C]">
     
-    <h1 class="text-2xl font-bold text-center mb-2">🔥 Market Listing Fee</h1>
-    <p class="text-gray-400 text-center text-sm mb-6">Pay 2 USDT to list your products</p>
+    <!-- LOGO -->
+    <div class="text-center mb-6">
+      <img src="logo.png" class="w-16 h-16 mx-auto rounded-2xl mb-3" alt="Market Logo">
+      <h1 class="text-2xl font-bold">Market Listing</h1>
+      <p class="text-gray-400 text-sm">One-time $2 fee to start selling</p>
+    </div>
+
+    <!-- PRICE CARD -->
+    <div class="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30 p-5 rounded-2xl mb-6 text-center">
+      <p class="text-gray-400 text-sm">Total Fee</p>
+      <p class="text-4xl font-bold text-green-400">$2.00</p>
+      <p class="text-gray-400 text-xs mt-1">USDT TRC20 Only</p>
+    </div>
 
     <!-- WARNING -->
-    <div class="bg-red-900/50 border-red-700 p-3 rounded-lg mb-6 text-sm">
-      ⚠️ <b>IMPORTANT:</b> Send ONLY USDT on TRON TRC20 Network. Other networks will be lost.
+    <div class="bg-red-900/30 border-red-700/50 p-3 rounded-xl mb-6 text-sm">
+      ⚠️ Send ONLY USDT on TRON TRC20. Other networks = Lost forever
     </div>
 
-    <!-- AMOUNT -->
-    <div class="bg-gray-800 p-4 rounded-lg mb-4 text-center">
-      <p class="text-gray-400 text-sm">Amount to Send</p>
-      <p class="text-3xl font-bold text-green-400">2.00 USDT</p>
+    <!-- WALLET -->
+    <div class="bg-[#0B0E13] p-4 rounded-xl mb-4 border border-[#2A313C]">
+      <p class="text-gray-400 text-xs mb-2">Send to this address</p>
+      <p id="wallet" class="font-mono text-xs break-all">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</p>
     </div>
 
-    <!-- WALLET ADDRESS -->
-    <div class="bg-gray-800 p-4 rounded-lg mb-4">
-      <p class="text-gray-400 text-sm mb-2">Send to this TRON Address:</p>
-      <p id="wallet" class="font-mono text-sm break-all bg-gray-950 p-3 rounded border-gray-700">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</p>
-    </div>
-
-    <!-- COPY BUTTON -->
-    <button onclick="copyWallet()" class="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg font-bold mb-4 transition">
+    <button onclick="copyWallet()" class="w-full bg-green-500 hover:bg-green-600 py-3 rounded-xl font-bold mb-4 transition">
       📋 Copy Address
     </button>
 
-    <!-- QR CODE -->
+    <!-- QR -->
     <div class="flex justify-center mb-6">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" 
-           class="bg-white p-2 rounded-lg" alt="TRON QR Code">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" 
+           class="bg-white p-3 rounded-2xl" alt="QR">
     </div>
 
     <!-- STEPS -->
-    <div class="text-sm text-gray-400 space-y-2 mb-6">
-      <p><b>1.</b> Open TronLink, Binance, or any TRON wallet</p>
-      <p><b>2.</b> Send exactly <b>2 USDT TRC20</b> to address above</p>
-      <p><b>3.</b> Click button below and send payment proof</p>
+    <div class="text-xs text-gray-400 space-y-1 mb-6">
+      <p>1. Open TronLink / Binance</p>
+      <p>2. Send 2 USDT TRC20</p>
+      <p>3. Send proof below</p>
     </div>
 
-    <!-- WHATSAPP PROOF BUTTON -->
-    <a href="https://wa.me/2348061715444?text=Hello%20I%20have%20paid%202%20USDT%20listing%20fee.%20Here%20is%20my%20proof:" 
+    <!-- WHATSAPP -->
+    <a href="https://wa.me/2348061715444?text=Hello%20I%20paid%202%20USDT%20listing%20fee.%20Proof%20attached:" 
        target="_blank"
-       class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-bold text-center block transition">
-      ✅ I Have Paid - Send Proof
+       class="w-full bg-[#25D366] hover:bg-[#20BA5A] py-3 rounded-xl font-bold text-center block transition">
+      ✅ Send Payment Proof
     </a>
-
-    <p class="text-xs text-gray-500 text-center mt-4">After payment you will be approved to list products</p>
 
   </div>
 
   <script>
     function copyWallet() {
       navigator.clipboard.writeText("TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T");
-      alert("✅ Wallet address copied!");
+      alert("✅ Address Copied!");
     }
   </script>
-
 </body>
 </html>
