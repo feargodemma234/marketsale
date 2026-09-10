@@ -6,182 +6,109 @@
   <title>Post Product - Market Sale</title>
   <link rel="icon" href="logo.png" type="image/png">
   <style>
-    body {background: #0f0f0f; color: white; font-family: Arial; margin: 0; padding: 0;}
-    header {text-align: center; padding: 20px; border-bottom: 1px solid #333;}
-    .logo {width: 70px; height: 70px; border-radius: 15px;}
-    .nav a {color: #00ff88; margin: 0 15px; text-decoration: none;}
-    .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
-    .main {flex: 3;}
-    .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content;}
-    .fee-box {background: #0d3b1e; padding: 15px; border-radius: 12px; text-align: center;}
-    .fee {color: #00ff88; font-size: 32px; font-weight: bold;}
-    .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
-    .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
-    .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
-    .btn-red {background: #dc3545;}
-    .btn-blue {background: #007bff;}
-    input, textarea {width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;}
-    .pending {border-left: 4px solid orange; padding: 12px; background: #1a1a1a; margin: 10px 0; cursor: pointer; border-radius: 8px; transition: 0.2s;}
-    .pending:hover {background: #222;}
-    .admin-panel {display: none; background: #0d3b1e; padding: 15px; border-radius: 12px; margin-top: 20px; border: 2px solid #00ff88;}
-    .selected {border-left: 4px solid #00ff88; background: #0d3b1e;}
+    body {background:#0f0f0f; color:white; font-family:Arial; margin:0;}
+    header {text-align:center; padding:20px; border-bottom:1px solid #333;}
+    .nav a {color:#00ff88; margin:0 15px; text-decoration:none; font-weight:bold;}
+    .container {max-width:700px; margin:30px auto; padding:20px;}
+    input, textarea {width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:white; box-sizing:border-box;}
+    .btn {background:#00ff88; color:#000; padding:12px 20px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;}
+    .pending {background:#151515; padding:15px; border-radius:10px; margin:10px 0; border:1px solid #333;}
+    .pending span {background:#ff8800; padding:4px 8px; border-radius:6px; font-size:12px;}
   </style>
 </head>
 <body>
+<script>
+// FORCE LOGIN FIRST
+if(!localStorage.getItem("marketSaleLoggedIn")){
+  alert("Please login first");
+  window.location.href = "login.html";
+}
+</script>
 
 <header>
-  <img src="logo.png" alt="Market Sale Logo" class="logo">
-  <h1>Post Product</h1>
+  <h1>📦 Post a Product</h1>
   <div class="nav">
     <a href="index.html">Home</a>
     <a href="post.html">Post Product</a>
     <a href="pay.html">Pay $2 Fee</a>
+    <a href="#" onclick="logout()">Logout</a>
   </div>
 </header>
 
 <div class="container">
-  <div class="main">
-    <h2>📦 Post Your Product</h2>
-    <form id="productForm">
-      <input type="text" id="title" placeholder="Product Name" required>
-      <input type="number" id="price" placeholder="Price in $" required>
-      <textarea id="desc" placeholder="Product Description" rows="3" required></textarea>
-      <input type="text" id="whatsapp" placeholder="Your WhatsApp Number e.g. 2348012345678" required>
-      <label>Product Image</label>
-      <input type="file" id="image" accept="image/*" required>
-      <button type="submit" class="btn">Submit for Approval</button>
-    </form>
+  <h2>Add New Product</h2>
+  <input type="text" id="title" placeholder="Product Title">
+  <input type="number" id="price" placeholder="Price in $">
+  <textarea id="desc" placeholder="Description"></textarea>
+  <input type="text" id="whatsapp" placeholder="WhatsApp Number with country code">
+  <input type="file" id="image" accept="image/*">
+  <button class="btn" onclick="postProduct()">Post Product</button>
 
-    <h2>⏳ Pending Products - Tap to Manage</h2>
-    <div id="pendingList"></div>
-
-    <!-- ADMIN PANEL SHOWS AFTER CLICK + KEY -->
-    <div class="admin-panel" id="adminPanel">
-      <h3>Manage Product ID: <span id="adminId"></span></h3>
-      <input type="text" id="secretKey" placeholder="Enter 3 word key">
-      <button class="btn" onclick="approveNow()">✅ Approve - Show on Homepage</button>
-      <button class="btn btn-red" onclick="removeNow()">❌ Remove - Delete</button>
-    </div>
-  </div>
-  
-  <div class="sidebar">
-    <h3>One-time $2 fee</h3>
-    <div class="fee-box">
-      <div class="fee">$2.00</div>
-      <p>USDT TRC20 Only</p>
-    </div>
-    <div class="warning">⚠️ Send ONLY USDT on TRON TRC20</div>
-    <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
-    <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
-    
-    <hr style="margin:20px 0;">
-    <a href="mailto:feargodemma56@gmail.com"><button class="btn btn-blue">📧 Email Admin</button></a>
-  </div>
+  <h3 style="margin-top:40px;">⏳ Pending Products - Tap to Approve</h3>
+  <div id="pendingList"></div>
 </div>
 
 <script>
-const ADMIN_EMAIL = "feargodemma56@gmail.com";
-const SECRET_KEY = "apple mango rice"; // CHANGE TO YOUR 3 WORDS
-let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
-let selectedId = null;
-let nextId = products.length > 0 ? Math.max(...products.map(p=>p.id)) + 1 : 1;
-
-window.onload = function() {
-  showPending();
+function postProduct() {
+  let title = document.getElementById("title").value;
+  let price = document.getElementById("price").value;
+  let desc = document.getElementById("desc").value;
+  let whatsapp = document.getElementById("whatsapp").value;
+  let file = document.getElementById("image").files[0];
+  
+  if(!title || !price || !desc || !whatsapp || !file) return alert("Fill all fields");
+  
+  let reader = new FileReader();
+  reader.onload = function(e) {
+    let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+    let newProduct = {
+      id: Date.now(),
+      title, price, desc, whatsapp,
+      image: e.target.result,
+      approved: false
+    };
+    products.push(newProduct);
+    localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+    alert("Product submitted! Waiting for approval.");
+    showPending();
+  };
+  reader.readAsDataURL(file);
 }
 
 function showPending() {
+  let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
   let pending = products.filter(p => !p.approved);
-  if(pending.length === 0) {
-    document.getElementById("pendingList").innerHTML = "<p>No pending products</p>";
-    return;
-  }
-  document.getElementById("pendingList").innerHTML = pending.map(p => 
-    `<div class="pending" onclick="selectProduct(${p.id})">
-      <b>ID: ${p.id}</b> - ${p.title} - $${p.price}
-    </div>`
-  ).join("");
+  document.getElementById("pendingList").innerHTML = pending.length === 0 ? "<p>No pending products</p>" :
+  pending.map(p => `
+    <div class="pending" onclick="approveProduct(${p.id})">
+      <span>ID: ${p.id}</span>
+      <h4>${p.title} - $${p.price}</h4>
+      <p>Tap to enter approval key</p>
+    </div>
+  `).join("");
 }
 
-function selectProduct(id) {
-  selectedId = id;
-  document.getElementById('adminId').innerText = id;
-  document.getElementById('adminPanel').style.display = 'block';
-  
-  // Highlight selected
-  document.querySelectorAll('.pending').forEach(el => el.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-  
-  window.scrollTo({top: document.getElementById('adminPanel').offsetTop, behavior: 'smooth'});
-}
-
-function toBase64(file) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-  });
-}
-
-document.getElementById("productForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const imageFile = document.getElementById("image").files[0];
-  const imageBase64 = await toBase64(imageFile);
-  
-  let newProduct = {
-    id: nextId++,
-    title: document.getElementById("title").value,
-    price: document.getElementById("price").value,
-    desc: document.getElementById("desc").value,
-    whatsapp: document.getElementById("whatsapp").value,
-    image: imageBase64,
-    approved: false
-  };
-  
-  products.push(newProduct);
-  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
-  
-  // Short email
-  const productLink = `${window.location.origin}/post.html`;
-  const subject = `New Product ID ${newProduct.id}: ${newProduct.title}`;
-  const body = `Product: ${newProduct.title} - $${newProduct.price}%0A%0AManage at: ${productLink}`;
-  window.open(`mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`);
-  
-  alert(`Product Submitted! ID: ${newProduct.id} \n\nGo to Pending and tap it to approve`);
-  e.target.reset();
-  showPending();
-});
-
-function approveNow() {
-  let key = document.getElementById('secretKey').value.trim();
-  if(key !== SECRET_KEY) return alert("Wrong 3 word key");
-  
-  let p = products.find(x => x.id === selectedId);
-  if(p) {
-    p.approved = true;
+function approveProduct(id) {
+  let key = prompt("Enter approval key:");
+  if(key === "1234") {
+    let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+    let p = products.find(x => x.id === id);
+    if(p) p.approved = true;
     localStorage.setItem("marketSaleProducts", JSON.stringify(products));
-    alert(`✅ Product ID ${selectedId} Approved! Now on homepage`);
-    resetAdmin();
+    alert("Product Approved!");
+    showPending();
+  } else {
+    alert("Wrong key");
   }
 }
 
-function removeNow() {
-  let key = document.getElementById('secretKey').value.trim();
-  if(key !== SECRET_KEY) return alert("Wrong 3 word key");
-  
-  products = products.filter(x => x.id !== selectedId);
-  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
-  alert(`❌ Product ID ${selectedId} Removed!`);
-  resetAdmin();
+function logout(){
+  localStorage.removeItem("marketSaleLoggedIn");
+  alert("Logged out");
+  location.href="login.html";
 }
 
-function resetAdmin() {
-  document.getElementById('adminPanel').style.display = 'none';
-  document.getElementById('secretKey').value = '';
-  selectedId = null;
-  showPending();
-}
+window.onload = showPending;
 </script>
-
 </body>
 </html>
