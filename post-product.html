@@ -36,7 +36,7 @@
   <a href="index.html" class="back">← Back to Home</a>
   
   <div id="formSection">
-    <h1>Post Product - $2 Fee</h1>
+    <h1 id="formTitle">Post Product - $2 Fee</h1>
     <div class="form-box">
       <form id="postForm">
         <div class="form-group">
@@ -64,7 +64,7 @@
           <input type="number" id="productPrice" step="0.01" required>
         </div>
         
-        <button type="submit" class="btn-submit">Continue to Payment $2</button>
+        <button type="submit" id="submitBtn" class="btn-submit">Continue to Payment $2</button>
       </form>
     </div>
   </div>
@@ -100,6 +100,18 @@ if(localStorage.getItem("marketSaleLoggedIn") !== "true"){
 
 const MY_WALLET_ADDRESS = "TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T";
 let productData = {};
+let editData = JSON.parse(localStorage.getItem("editProduct"));
+
+// LOAD DATA IF EDITING
+if(editData){
+  document.getElementById("formTitle").innerText = "Update Product - $2 Fee";
+  document.getElementById("submitBtn").innerText = "Update Product $2";
+  document.getElementById("productName").value = editData.title;
+  document.getElementById("productDesc").value = editData.desc;
+  document.getElementById("productEmail").value = editData.email;
+  document.getElementById("productWhatsapp").value = editData.whatsapp;
+  document.getElementById("productPrice").value = editData.price;
+}
 
 document.getElementById("postForm").addEventListener("submit", function(e){
   e.preventDefault();
@@ -122,7 +134,35 @@ document.getElementById("postForm").addEventListener("submit", function(e){
   let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${MY_WALLET_ADDRESS}`;
   document.getElementById("qrCode").src = qrUrl;
   document.getElementById("walletAddress").innerText = MY_WALLET_ADDRESS;
+  
+  // SAVE PRODUCT AFTER 2 SECONDS - SIMULATE PAYMENT DONE
+  setTimeout(saveProduct, 2000);
 });
+
+function saveProduct(){
+  let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+  let newProduct;
+  
+  if(editData){ // UPDATING
+    newProduct = {...editData, ...productData, title: productData.name, id: editData.id};
+    products = products.map(p => p.id == editData.id ? newProduct : p);
+    localStorage.removeItem("editProduct");
+  } else { // NEW PRODUCT
+    newProduct = {
+      id: Date.now(),
+      title: productData.name,
+      desc: productData.desc,
+      email: productData.email,
+      whatsapp: productData.whatsapp,
+      price: productData.price,
+      seller: productData.seller,
+      image: 'logo.png'
+    };
+    products.push(newProduct);
+  }
+  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+  window.location.href = "index.html";
+}
 
 function copyAddress(){
   navigator.clipboard.writeText(MY_WALLET_ADDRESS);
