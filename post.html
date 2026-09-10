@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post Product - Market Sale</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    body {background: #0f0f0f; color: white; font-family: Arial; margin: 0; padding: 0;}
+    header {text-align: center; padding: 20px; border-bottom: 1px solid #333;}
+    .logo {width: 70px; height: 70px; border-radius: 15px;}
+    .nav a {color: #00ff88; margin: 0 15px; text-decoration: none;}
+    .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
+    .main {flex: 3;}
+    .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content; position: sticky; top: 20px;}
+    .fee-box {background: #0d3b1e; padding: 15px; border-radius: 12px; text-align: center;}
+    .fee {color: #00ff88; font-size: 32px; font-weight: bold;}
+    .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
+    .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
+    .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
+    .btn-red {background: #dc3545;}
+    .btn-blue {background: #007bff;}
+    input, textarea {width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;}
+    .proof-preview {width: 100%; border-radius: 8px; margin-top: 10px; display: none;}
+    .pending {border-left: 4px solid orange; padding: 10px; background: #1a1a1a; margin: 10px 0;}
+    @media (max-width: 900px) {.container {flex-direction: column;} .sidebar {position: static;}}
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="Market Sale Logo" class="logo">
+  <h1>Post Product</h1>
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="post.html">Post Product</a>
+    <a href="pay.html">Pay $2 Fee</a>
+  </div>
+</header>
+
+<div class="container">
+  <!-- MAIN: POST FORM -->
+  <div class="main">
+    <h2>📦 Post Your Product</h2>
+    <p style="color:#aaa;">Submit product. Admin will approve after payment</p>
+    <form id="productForm">
+      <input type="text" id="title" placeholder="Product Name" required>
+      <input type="number" id="price" placeholder="Price in $" required>
+      <textarea id="desc" placeholder="Product Description" rows="3" required></textarea>
+      <input type="text" id="whatsapp" placeholder="Your WhatsApp Number e.g. 2348012345678" required>
+      <label>Product Image</label>
+      <input type="file" id="image" accept="image/*" required>
+      <button type="submit" class="btn">Submit for Approval</button>
+    </form>
+
+    <h2>⏳ Pending Products</h2>
+    <div id="pendingList"></div>
+  </div>
+  
+  <!-- SIDEBAR: PAYMENT + ADMIN -->
+  <div class="sidebar">
+    <h3>One-time $2 fee</h3>
+    <div class="fee-box">
+      <div class="fee">$2.00</div>
+      <p>USDT TRC20 Only</p>
+    </div>
+    <div class="warning">⚠️ Send ONLY USDT on TRON TRC20</div>
+    <p>Send to:</p>
+    <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
+    <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" style="width:100%; border-radius:10px;">
+    
+    <hr style="margin:20px 0;">
+    <div style="background:#0d3b1e; padding:15px; border-radius:12px;">
+      <h4>After Payment:</h4>
+      <input type="file" id="proofSidebar" accept="image/*">
+      <img id="proofPreview" class="proof-preview">
+      <button class="btn btn-blue" onclick="sendProof()">📧 Send Proof to Admin</button>
+    </div>
+
+    <hr style="margin:20px 0;">
+    <h4>🛠️ Admin Panel</h4>
+    <input type="number" id="productIdInput" placeholder="Enter Product ID">
+    <button class="btn btn-blue" onclick="approveProduct()">✅ Approve by ID</button>
+    <button class="btn btn-red" onclick="removeProduct()">❌ Remove by ID</button>
+    <a href="mailto:feargodemma56@gmail.com"><button class="btn">📧 Email: feargodemma56@gmail.com</button></a>
+  </div>
+</div>
+
+<script>
+let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+let proofImage = "";
+let nextId = products.length > 0 ? Math.max(...products.map(p=>p.id)) + 1 : 1;
+
+function showPending() {
+  let pending = products.filter(p => !p.approved);
+  document.getElementById("pendingList").innerHTML = pending.length === 0 ? "<p>No pending products</p>" : 
+  pending.map(p => `<div class="pending"><b>ID: ${p.id}</b> - ${p.title} - $${p.price}</div>`).join("");
+}
+
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+document.getElementById("proofSidebar").addEventListener("change", async e => {
+  const file = e.target.files[0];
+  if(file) {
+    proofImage = await toBase64(file);
+    document.getElementById("proofPreview").src = proofImage;
+    document.getElementById("proofPreview").style.display = "block";
+  }
+});
+
+function sendProof() {
+  if(!proofImage) return alert("Upload proof first");
+  window.open(`mailto:feargodemma56@gmail.com?subject=Market Sale Proof`);
+  alert("Attach the proof image and send");
+}
+
+document.getElementById("productForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const imageFile = document.getElementById("image").files[0];
+  const imageBase64 = await toBase64(imageFile);
+  
+  let newProduct = {
+    id: nextId++,
+    title: document.getElementById("title").value,
+    price: document.getElementById("price").value,
+    desc: document.getElementById("desc").value,
+    whatsapp: document.getElementById("whatsapp").value,
+    image: imageBase64,
+    approved: false
+  };
+  
+  products.push(newProduct);
+  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+  alert(`Product Submitted! Your Product ID: ${newProduct.id}`);
+  e.target.reset();
+  showPending();
+});
+
+function approveProduct() {
+  let id = parseInt(document.getElementById("productIdInput").value);
+  let p = products.find(x => x.id === id);
+  if(p) {
+    p.approved = true;
+    localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+    alert(`Product ID ${id} Approved!`);
+    showPending();
+  } else alert("ID not found");
+}
+
+function removeProduct() {
+  let id = parseInt(document.getElementById("productIdInput").value);
+  products = products.filter(x => x.id !== id);
+  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+  alert(`Product ID ${id} Removed!`);
+  showPending();
+}
+
+showPending();
+</script>
+
+</body>
+</html>
