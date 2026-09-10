@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details - Market Sale</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box;}
+    body {background:#0f0f0f; color:white; font-family:Arial; padding:20px;}
+    .container {max-width:600px; margin:0 auto;}
+    .back {color:#00ff88; text-decoration:none; display:block; margin-bottom:20px; font-weight:bold;}
+    
+    .card {background:#151515; border-radius:15px; border:1px solid #333; overflow:hidden;}
+    .product-img {width:100%; height:300px; object-fit:cover; background:#222;}
+    .product-info {padding:20px;}
+    .product-title {font-size:24px; font-weight:bold; margin-bottom:10px; color:#00ff88;}
+    .product-price {font-size:28px; font-weight:bold; color:#00ff88; margin-bottom:15px;}
+    .product-desc {color:#ccc; line-height:1.6; margin-bottom:15px;}
+    .product-meta {background:#1a1a1a; padding:15px; border-radius:10px; margin-bottom:15px;}
+    .meta-row {display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;}
+    .meta-label {color:#aaa;}
+    .meta-value {color:white;}
+    
+    .btn {padding:16px; border-radius:10px; border:none; font-weight:bold; width:100%; font-size:16px; cursor:pointer; margin-bottom:10px; text-align:center; text-decoration:none; display:block;}
+    .btn-whatsapp {background:#25D366; color:white;}
+    .btn-whatsapp:active {background:#1daa52; transform:scale(0.97);}
+    .btn-edit {background:#00aaff; color:white;}
+    .btn-edit:active {background:#0088cc; transform:scale(0.97);}
+    .btn-delete {background:#ff4444; color:white;}
+    .btn-delete:active {background:#cc0000; transform:scale(0.97);}
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <a href="index.html" class="back">← Back to Marketplace</a>
+  
+  <div class="card">
+    <img id="productImage" src="logo.png" class="product-img">
+    <div class="product-info">
+      <h1 id="productTitle" class="product-title">Loading...</h1>
+      <div id="productPrice" class="product-price">$0.00</div>
+      <p id="productDesc" class="product-desc"></p>
+      
+      <div class="product-meta">
+        <div class="meta-row">
+          <span class="meta-label">Seller:</span>
+          <span class="meta-value" id="productSeller">Admin</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Email:</span>
+          <span class="meta-value" id="productEmail">-</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">WhatsApp:</span>
+          <span class="meta-value" id="productWhatsapp">-</span>
+        </div>
+      </div>
+      
+      <a id="whatsappBtn" target="_blank" class="btn btn-whatsapp">💬 Contact Seller on WhatsApp</a>
+      <button id="editBtn" class="btn btn-edit">✏️ Update Product</button>
+      <button id="deleteBtn" class="btn btn-delete">🗑️ Delete Product</button>
+    </div>
+  </div>
+</div>
+
+<script>
+if(localStorage.getItem("marketSaleLoggedIn") !== "true"){
+  window.location.href = "login.html";
+}
+
+let currentUser = JSON.parse(localStorage.getItem("marketSaleUser"));
+let productId = localStorage.getItem("viewProductId");
+let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+let product = products.find(p => p.id == productId);
+
+if(!product){
+  window.location.href = "index.html";
+}
+
+// LOAD PRODUCT DATA
+document.getElementById("productImage").src = product.image || 'logo.png';
+document.getElementById("productTitle").innerText = product.title;
+document.getElementById("productPrice").innerText = `$${product.price}`;
+document.getElementById("productDesc").innerText = product.desc;
+document.getElementById("productSeller").innerText = product.seller;
+document.getElementById("productEmail").innerText = product.email || 'Not provided';
+document.getElementById("productWhatsapp").innerText = product.whatsapp;
+
+// SELL BUTTON - WHATSAPP
+let msg = `Hi ${product.seller}, I'm interested in your product: ${product.title} for $${product.price}`;
+let whatsappNumber = product.whatsapp.replace(/[^0-9]/g,"");
+document.getElementById("whatsappBtn").href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
+
+// UPDATE BUTTON
+document.getElementById("editBtn").addEventListener("click", function(){
+  localStorage.setItem("editProduct", JSON.stringify(product));
+  window.location.href = "post-product.html";
+});
+
+// DELETE BUTTON
+document.getElementById("deleteBtn").addEventListener("click", function(){
+  if(confirm("Delete this product?")){
+    products = products.filter(p => p.id != productId);
+    localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+    window.location.href = "index.html";
+  }
+});
+
+// HIDE EDIT/DELETE IF NOT SELLER
+if(product.seller !== currentUser.name){
+  document.getElementById("editBtn").style.display = "none";
+  document.getElementById("deleteBtn").style.display = "none";
+}
+</script>
+
+</body>
+</html>
