@@ -11,7 +11,6 @@
     .logo {width: 70px; height: 70px; border-radius: 15px;}
     
     .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
-    
     .main {flex: 3;}
     .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content; position: sticky; top: 20px;}
     
@@ -20,13 +19,15 @@
     .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
     .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
     .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
+    .btn-email {background: #007bff;}
     
     input, textarea {width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;}
+    input[type="file"] {border: 1px dashed #555; padding: 10px;}
     .product {border: 1px solid #333; padding: 15px; margin: 15px 0; border-radius: 10px; background: #1a1a1a;}
-    .product h3 {margin: 0; color: #00ff88;}
+    .product img {width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;}
+    .product h3 {margin: 5px 0; color: #00ff88;}
     a {color: #00aaff; text-decoration: none;}
     
-    /* Mobile: stack columns */
     @media (max-width: 900px) {
       .container {flex-direction: column;}
       .sidebar {position: static;}
@@ -46,12 +47,17 @@
   <!-- MAIN: PRODUCTS -->
   <div class="main">
     <h2>📦 Post Your Product</h2>
+    <p style="color:#aaa; font-size:14px;">After paying $2, upload proof to get listed</p>
     <form id="productForm">
       <input type="text" id="title" placeholder="Product Name" required>
       <input type="number" id="price" placeholder="Price in $" required>
       <textarea id="desc" placeholder="Product Description" rows="3" required></textarea>
       <input type="text" id="whatsapp" placeholder="Your WhatsApp Number e.g. 2348012345678" required>
-      <button type="submit" class="btn">Post Product</button>
+      <label>Product Image</label>
+      <input type="file" id="image" accept="image/*" required>
+      <label>Proof of Payment Screenshot</label>
+      <input type="file" id="proof" accept="image/*" required>
+      <button type="submit" class="btn">Post Product & Send for Approval</button>
     </form>
 
     <h2>🛒 Products For Sale</h2>
@@ -77,6 +83,11 @@
     <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
     <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
     <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" alt="QR Code" style="width:100%; border-radius:10px; margin-top:10px;">
+    
+    <hr style="margin:20px 0; border:1px solid #333;">
+    <p><b>After Payment:</b></p>
+    <p style="font-size:13px;">Upload your proof in the form and it will be sent to admin for approval</p>
+    <a href="mailto:feargodemma56@gmail.com"><button class="btn btn-email">📧 Email: feargodemma56@gmail.com</button></a>
   </div>
 
 </div>
@@ -91,6 +102,7 @@ function showProducts() {
   }
   document.getElementById("productList").innerHTML = products.map(p => `
     <div class="product">
+      <img src="${p.image}" alt="${p.title}">
       <h3>${p.title} - $${p.price}</h3>
       <p>${p.desc}</p>
       <a href="https://wa.me/${p.whatsapp}" target="_blank">💬 Contact Seller on WhatsApp</a>
@@ -98,19 +110,43 @@ function showProducts() {
   `).join("");
 }
 
-document.getElementById("productForm").addEventListener("submit", e => {
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+document.getElementById("productForm").addEventListener("submit", async e => {
   e.preventDefault();
+  
+  const imageFile = document.getElementById("image").files[0];
+  const proofFile = document.getElementById("proof").files[0];
+  
+  const imageBase64 = await toBase64(imageFile);
+  const proofBase64 = await toBase64(proofFile);
+  
   let newProduct = {
     title: document.getElementById("title").value,
     price: document.getElementById("price").value,
     desc: document.getElementById("desc").value,
-    whatsapp: document.getElementById("whatsapp").value
+    whatsapp: document.getElementById("whatsapp").value,
+    image: imageBase64
   };
+  
   products.unshift(newProduct);
   localStorage.setItem("marketSaleProducts", JSON.stringify(products));
   showProducts();
+  
+  // Open email with proof attached note
+  const subject = "Market Sale - Proof of $2 Listing Fee";
+  const body = `New Seller: ${newProduct.title}%0AWhatsApp: ${newProduct.whatsapp}%0APlease find proof of payment attached in the form.`;
+  window.open(`mailto:feargodemma56@gmail.com?subject=${subject}&body=${body}`);
+  
+  alert("Product submitted! Please email the proof screenshot to feargodemma56@gmail.com for approval.");
   e.target.reset();
-  alert("Product Posted!");
 });
 
 showProducts();
