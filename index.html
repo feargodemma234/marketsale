@@ -14,8 +14,8 @@
     .navbar .logo {width:40px; height:40px; border-radius:10px;}
     .nav-right {display:flex; align-items:center; gap:12px;}
     .welcome {color:#00ff88; font-weight:600; font-size:14px;}
-    .btn-wallet {background:#00ff88; color:#000; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px;}
     .btn-logout {background:#ff4444; color:white; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px;}
+    .btn-logout:active {transform:scale(0.95);}
     
     /* HEADER */
     .header {padding:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
@@ -44,7 +44,6 @@
   <img src="logo.png" class="logo">
   <div class="nav-right">
     <span id="welcomeUser" class="welcome">Welcome</span>
-    <button id="walletBtn" class="btn-wallet">💰 Wallet</button>
     <button id="logoutBtn" class="btn-logout">Logout</button>
   </div>
 </div>
@@ -78,11 +77,6 @@ document.addEventListener("DOMContentLoaded", function(){
   
   loadProducts();
   
-  // WALLET BUTTON
-  document.getElementById("walletBtn").addEventListener("click", function(){
-    window.location.href = "wallet.html";
-  });
-  
   // LOGOUT
   document.getElementById("logoutBtn").addEventListener("click", function(){
     localStorage.removeItem("marketSaleLoggedIn");
@@ -90,12 +84,12 @@ document.addEventListener("DOMContentLoaded", function(){
     window.location.href = "login.html";
   });
   
-  // POST PRODUCT BUTTON - NO POPUP
+  // POST PRODUCT BUTTON - $2 FEE
   document.getElementById("postBtn").addEventListener("click", function(){
     let balance = parseFloat(localStorage.getItem("marketSaleBalance")) || 0;
     
     if(balance < 2){
-      // No alert. Just send to wallet
+      // No wallet button, so just go to wallet page directly
       window.location.href = "wallet.html"; 
       return;
     }
