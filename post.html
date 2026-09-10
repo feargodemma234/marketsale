@@ -8,22 +8,23 @@
   <style>
     body {background: #0f0f0f; color: white; font-family: Arial; margin: 0; padding: 0;}
     header {text-align: center; padding: 20px; border-bottom: 1px solid #333;}
-    .logo {width: 70px; height: 70px; border-radius: 15px;}
-    .nav a {color: #00ff88; margin: 0 15px; text-decoration: none;}
-    .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
-    .main {flex: 3;}
-    .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content; position: sticky; top: 20px;}
-    .fee-box {background: #0d3b1e; padding: 15px; border-radius: 12px; text-align: center;}
-    .fee {color: #00ff88; font-size: 32px; font-weight: bold;}
-    .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
-    .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
-    .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
-    .btn-red {background: #dc3545;}
-    .btn-blue {background: #007bff;}
+   .logo {width: 70px; height: 70px; border-radius: 15px;}
+   .nav a {color: #00ff88; margin: 0 15px; text-decoration: none;}
+   .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
+   .main {flex: 3;}
+   .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content; position: sticky; top: 20px;}
+   .fee-box {background: #0d3b1e; padding: 15px; border-radius: 12px; text-align: center;}
+   .fee {color: #00ff88; font-size: 32px; font-weight: bold;}
+   .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
+   .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
+   .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
+   .btn-red {background: #dc3545;}
+   .btn-blue {background: #007bff;}
     input, textarea {width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;}
-    .proof-preview {width: 100%; border-radius: 8px; margin-top: 10px; display: none;}
-    .pending {border-left: 4px solid orange; padding: 10px; background: #1a1a1a; margin: 10px 0;}
-    @media (max-width: 900px) {.container {flex-direction: column;} .sidebar {position: static;}}
+   .proof-preview {width: 100%; border-radius: 8px; margin-top: 10px; display: none;}
+   .pending {border-left: 4px solid orange; padding: 10px; background: #1a1a1a; margin: 10px 0;}
+   .admin-section {display: none;} /* hidden by default */
+    @media (max-width: 900px) {.container {flex-direction: column;}.sidebar {position: static;}}
   </style>
 </head>
 <body>
@@ -79,22 +80,44 @@
     </div>
 
     <hr style="margin:20px 0;">
-    <h4>🛠️ Admin Panel</h4>
-    <input type="number" id="productIdInput" placeholder="Enter Product ID">
-    <button class="btn btn-blue" onclick="approveProduct()">✅ Approve by ID</button>
-    <button class="btn btn-red" onclick="removeProduct()">❌ Remove by ID</button>
+    <!-- ADMIN SECTION -->
+    <div class="admin-section" id="adminPanel">
+      <h4>🛠️ Admin Panel</h4>
+      <input type="number" id="productIdInput" placeholder="Enter Product ID">
+      <button class="btn btn-blue" onclick="approveProduct()">✅ Approve by ID</button>
+      <button class="btn btn-red" onclick="removeProduct()">❌ Remove by ID</button>
+    </div>
     <a href="mailto:feargodemma56@gmail.com"><button class="btn">📧 Email: feargodemma56@gmail.com</button></a>
   </div>
 </div>
 
 <script>
+let ADMIN_PASSWORD = "marketsale2026"; // CHANGE THIS PASSWORD
+let isAdmin = sessionStorage.getItem("isAdmin") === "true";
 let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
 let proofImage = "";
-let nextId = products.length > 0 ? Math.max(...products.map(p=>p.id)) + 1 : 1;
+let nextId = products.length > 0? Math.max(...products.map(p=>p.id)) + 1 : 1;
+
+// Check password on load
+window.onload = function() {
+  if(!isAdmin) {
+    let pass = prompt("🔒 Enter Admin Password to access Admin Panel:");
+    if(pass === ADMIN_PASSWORD) {
+      isAdmin = true;
+      sessionStorage.setItem("isAdmin", "true");
+      document.getElementById("adminPanel").style.display = "block";
+    } else {
+      alert("Wrong password. Admin panel hidden.");
+    }
+  } else {
+    document.getElementById("adminPanel").style.display = "block";
+  }
+  showPending();
+}
 
 function showPending() {
-  let pending = products.filter(p => !p.approved);
-  document.getElementById("pendingList").innerHTML = pending.length === 0 ? "<p>No pending products</p>" : 
+  let pending = products.filter(p =>!p.approved);
+  document.getElementById("pendingList").innerHTML = pending.length === 0? "<p>No pending products</p>" : 
   pending.map(p => `<div class="pending"><b>ID: ${p.id}</b> - ${p.title} - $${p.price}</div>`).join("");
 }
 
@@ -145,6 +168,7 @@ document.getElementById("productForm").addEventListener("submit", async e => {
 });
 
 function approveProduct() {
+  if(!isAdmin) return alert("Not authorized");
   let id = parseInt(document.getElementById("productIdInput").value);
   let p = products.find(x => x.id === id);
   if(p) {
@@ -156,14 +180,13 @@ function approveProduct() {
 }
 
 function removeProduct() {
+  if(!isAdmin) return alert("Not authorized");
   let id = parseInt(document.getElementById("productIdInput").value);
-  products = products.filter(x => x.id !== id);
+  products = products.filter(x => x.id!== id);
   localStorage.setItem("marketSaleProducts", JSON.stringify(products));
   alert(`Product ID ${id} Removed!`);
   showPending();
 }
-
-showPending();
 </script>
 
 </body>
