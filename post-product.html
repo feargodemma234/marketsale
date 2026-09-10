@@ -11,21 +11,15 @@
     .container {max-width:600px; margin:0 auto;}
     .back {color:#00ff88; text-decoration:none; display:block; margin-bottom:20px; font-weight:bold;}
     h1 {color:#00ff88; margin-bottom:20px; text-align:center;}
-    
     .form-box {background:#151515; padding:25px; border-radius:15px; border:1px solid #333;}
     .form-group {margin-bottom:18px;}
     .form-group label {display:block; margin-bottom:8px; color:#aaa; font-size:14px;}
     .form-group input, .form-group textarea {width:100%; padding:14px; background:#222; border:1px solid #333; border-radius:10px; color:white; font-size:15px;}
     .form-group textarea {min-height:100px; resize:vertical;}
     .btn-submit {background:#00ff88; color:#000; padding:16px; border-radius:10px; border:none; font-weight:bold; width:100%; font-size:16px; cursor:pointer;}
-    .btn-submit:active {transform:scale(0.97); background:#00cc66;}
-    
-    /* IMAGE UPLOAD */
     .image-upload {border:2px dashed #333; border-radius:12px; padding:20px; text-align:center; cursor:pointer; background:#1a1a1a;}
     .image-upload:hover {border-color:#00ff88;}
     .image-preview {width:100%; max-height:250px; object-fit:cover; border-radius:10px; margin-top:10px; display:none;}
-    
-    /* WALLET PAYMENT BOX */
     .payment-box {display:none; background:#151515; padding:25px; border-radius:15px; border:1px solid #333; text-align:center; margin-top:20px;}
     .warning {background:#2a1f00; color:#ffaa00; padding:15px; border-radius:12px; margin-bottom:20px; text-align:left; font-size:13px;}
     .qr-box {background:white; padding:20px; border-radius:15px; display:inline-block; margin:15px 0;}
@@ -44,8 +38,6 @@
     <h1 id="formTitle">Post Product - $2 Fee</h1>
     <div class="form-box">
       <form id="postForm">
-        
-        <!-- NEW IMAGE UPLOAD -->
         <div class="form-group">
           <label>Product Image *</label>
           <div class="image-upload" onclick="document.getElementById('productImage').click()">
@@ -54,67 +46,38 @@
           </div>
           <input type="file" id="productImage" accept="image/*" style="display:none;" required>
         </div>
-
-        <div class="form-group">
-          <label>Product Name *</label>
-          <input type="text" id="productName" required>
-        </div>
-        
-        <div class="form-group">
-          <label>Description *</label>
-          <textarea id="productDesc" required></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label>Email (Optional)</label>
-          <input type="email" id="productEmail">
-        </div>
-        
-        <div class="form-group">
-          <label>WhatsApp Number *</label>
-          <input type="text" id="productWhatsapp" placeholder="+234 800 000 0000" required>
-        </div>
-        
-        <div class="form-group">
-          <label>Price $ *</label>
-          <input type="number" id="productPrice" step="0.01" required>
-        </div>
-        
+        <div class="form-group"><label>Product Name *</label><input type="text" id="productName" required></div>
+        <div class="form-group"><label>Description *</label><textarea id="productDesc" required></textarea></div>
+        <div class="form-group"><label>Email (Optional)</label><input type="email" id="productEmail"></div>
+        <div class="form-group"><label>WhatsApp Number *</label><input type="text" id="productWhatsapp" placeholder="+234 800 000 0000" required></div>
+        <div class="form-group"><label>Price $ *</label><input type="number" id="productPrice" step="0.01" required></div>
         <button type="submit" id="submitBtn" class="btn-submit">Continue to Payment $2</button>
       </form>
     </div>
   </div>
   
-  <!-- PAYMENT SECTION -->
   <div id="paymentSection" class="payment-box">
     <h1 style="color:#00ff88;">Pay $2 to Publish</h1>
-    <div class="warning">
-      ⚠️ Only send Tether USDT (TRC20) assets to this address. Other assets will be lost forever.
-    </div>
+    <div class="warning">⚠️ Only send Tether USDT (TRC20) assets to this address. Other assets will be lost forever.</div>
     <div>US <b>USDT</b> <span style="background:#333; padding:2px 8px; border-radius:8px; font-size:12px;">TRC20</span></div>
-    <div class="qr-box">
-      <img id="qrCode" src="" alt="QR Code">
-    </div>
+    <div class="qr-box"><img id="qrCode" src=""></div>
     <div class="address-box">
       <div style="color:#aaa; font-size:12px; margin-bottom:8px;">USDT TRC20 Address</div>
       <div class="address" id="walletAddress">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
       <button class="btn-copy" onclick="copyAddress()">📋 Copy</button>
     </div>
-    <p style="color:#aaa; font-size:13px;">Send $2 USDT TRC20, then send screenshot to admin to approve your product.</p>
+    <p style="color:#aaa; font-size:13px;">Send $2 USDT TRC20, then send screenshot to admin. Product will show after approval.</p>
   </div>
 </div>
 
 <script>
-if(localStorage.getItem("marketSaleLoggedIn") !== "true"){
-  window.location.href = "login.html";
-}
+if(localStorage.getItem("marketSaleLoggedIn") !== "true"){ window.location.href = "login.html"; }
 
 const MY_WALLET_ADDRESS = "TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T";
 let productData = {};
 let productImageBase64 = '';
 let editData = JSON.parse(localStorage.getItem("editProduct"));
 
-// IMAGE PREVIEW
 document.getElementById("productImage").addEventListener("change", function(e){
   let file = e.target.files[0];
   if(file){
@@ -129,7 +92,6 @@ document.getElementById("productImage").addEventListener("change", function(e){
   }
 });
 
-// LOAD DATA IF EDITING
 if(editData){
   document.getElementById("formTitle").innerText = "Update Product - $2 Fee";
   document.getElementById("submitBtn").innerText = "Update Product $2";
@@ -148,11 +110,7 @@ if(editData){
 
 document.getElementById("postForm").addEventListener("submit", function(e){
   e.preventDefault();
-  
-  if(!productImageBase64 && !editData){
-    alert("Please upload product image");
-    return;
-  }
+  if(!productImageBase64 && !editData){ alert("Please upload product image"); return; }
   
   productData = {
     name: document.getElementById("productName").value,
@@ -175,14 +133,14 @@ document.getElementById("postForm").addEventListener("submit", function(e){
 });
 
 function saveProduct(){
-  let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+  let pending = JSON.parse(localStorage.getItem("marketSalePending")) || [];
   let newProduct;
   
-  if(editData){
+  if(editData){ // UPDATING
     newProduct = {...editData, ...productData, title: productData.name, id: editData.id};
-    products = products.map(p => p.id == editData.id ? newProduct : p);
+    pending = pending.map(p => p.id == editData.id ? newProduct : p);
     localStorage.removeItem("editProduct");
-  } else {
+  } else { // NEW PRODUCT
     newProduct = {
       id: Date.now(),
       title: productData.name,
@@ -193,15 +151,14 @@ function saveProduct(){
       seller: productData.seller,
       image: productData.image
     };
-    products.push(newProduct);
+    pending.push(newProduct);
   }
-  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+  localStorage.setItem("marketSalePending", JSON.stringify(pending));
+  alert("Product submitted! Waiting for admin approval.");
   window.location.href = "index.html";
 }
 
-function copyAddress(){
-  navigator.clipboard.writeText(MY_WALLET_ADDRESS);
-}
+function copyAddress(){ navigator.clipboard.writeText(MY_WALLET_ADDRESS); }
 </script>
 
 </body>
