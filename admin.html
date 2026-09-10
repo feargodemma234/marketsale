@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Pending Products</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    body {background:#0f0f0f; color:white; font-family:Arial; margin:0;}
+    header {text-align:center; padding:20px; border-bottom:1px solid #333;}
+    .logo {width:60px; height:60px; border-radius:12px;}
+    .container {max-width:800px; margin:30px auto; padding:20px;}
+    .pending-card {background:#151515; border-radius:15px; padding:20px; border:1px solid #444; margin-bottom:20px;}
+    .pending-card img {width:100%; max-height:300px; object-fit:cover; border-radius:10px;}
+    .btns {display:flex; gap:10px; margin-top:15px;}
+    .btn-approve {background:#00ff88; color:#000; padding:14px; border:none; border-radius:10px; font-weight:bold; flex:1; cursor:pointer;}
+    .btn-reject {background:#ff4444; color:white; padding:14px; border:none; border-radius:10px; font-weight:bold; flex:1; cursor:pointer;}
+    .btn-cancel {background:#555; color:white; padding:14px; border:none; border-radius:10px; font-weight:bold; flex:1; cursor:pointer;}
+    .back {color:#00ff88; text-decoration:none; font-weight:bold;}
+    .empty {text-align:center; color:#888; padding:40px;}
+    
+    /* MESSAGE BOX */
+    .message {padding:15px; border-radius:10px; margin:15px 0; display:none; font-size:15px;}
+    .message.success {background:#0a3d0a; color:#00ff88; border:1px solid #00ff88;}
+    .message.error {background:#4a0f0f; color:#ff4444; border:1px solid #ff4444;}
+    .message.warning {background:#4a3d0a; color:#ffaa00; border:1px solid #ffaa00;}
+  </style>
+</head>
+<body>
+<script>
+let currentUser = JSON.parse(localStorage.getItem("marketSaleUser"));
+if(!currentUser || currentUser.email !== "feargodemma56@gmail.com"){
+  window.location.href = "index.html";
+}
+</script>
+
+<header>
+  <img src="logo.png" class="logo">
+  <h1>🔐 Admin Panel</h1>
+  <a href="index.html" class="back">← Back to Home</a>
+</header>
+
+<div class="container">
+  <h2>Pending Products for Approval</h2>
+  
+  <!-- MESSAGE BOX INSTEAD OF ALERT -->
+  <div id="messageBox" class="message"></div>
+  
+  <div id="pendingList"></div>
+</div>
+
+<script>
+function showMessage(text, type){
+  let box = document.getElementById("messageBox");
+  box.className = "message " + type;
+  box.innerText = text;
+  box.style.display = "block";
+  setTimeout(() => {box.style.display = "none";}, 4000);
+}
+
+function loadPending() {
+  let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+  let pending = products.filter(p => p.approved === false);
+  
+  if(pending.length === 0) {
+    document.getElementById("pendingList").innerHTML = `<div class="empty">No pending products 🎉</div>`;
+    return;
+  }
+  
+  document.getElementById("pendingList").innerHTML = pending.map(p => `
+    <div class="pending-card" id="card-${p.id}">
+      <img src="${p.image}">
+      <h3>${p.title} - $${p.price}</h3>
+      <p style="color:#aaa;">${p.desc}</p>
+      <p style="color:#aaa; font-size:14px;">Seller: ${p.postedBy} | WhatsApp: ${p.whatsapp}</p>
+      <div class="btns" id="btns-${p.id}">
+        <button class="btn-approve" onclick="approve(${p.id})">✅ Approve</button>
+        <button class="btn-reject" onclick="showRejectConfirm(${p.id})">❌ Remove</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+// INLINE CONFIRM INSTEAD OF POPUP
+function showRejectConfirm(id) {
+  document.getElementById(`btns-${id}`).innerHTML = `
+    <button class="btn-reject" onclick="reject(${id})">Yes, Delete</button>
+    <button class="btn-cancel" onclick="loadPending()">Cancel</button>
+  `;
+}
+
+function approve(id) {
+  let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+  let p = products.find(x => x.id === id);
+  p.approved = true;
+  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+  showMessage("Product Approved Successfully!", "success");
+  loadPending();
+}
+
+function reject(id) {
+  let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+  products = products.filter(p => p.id !== id);
+  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+  showMessage("Product Removed", "error");
+  loadPending();
+}
+
+window.onload = loadPending;
+</script>
+</body>
+</html>
