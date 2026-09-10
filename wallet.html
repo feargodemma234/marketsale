@@ -9,24 +9,24 @@
     * {margin:0; padding:0; box-sizing:border-box;}
     body {background:#0f0f0f; color:white; font-family:Arial; padding:20px; min-height:100vh;}
     
-    .box {background:#151515; padding:30px; border-radius:15px; border:1px solid #333; max-width:500px; margin:0 auto; text-align:center;}
+    .box {background:#151515; padding:25px; border-radius:15px; border:1px solid #333; max-width:500px; margin:0 auto; text-align:center;}
     .back {color:#00ff88; text-decoration:none; display:block; text-align:left; margin-bottom:20px; font-weight:bold;}
     
-    .balance-box {background:linear-gradient(135deg, #00ff88, #00cc66); padding:25px; border-radius:15px; margin:20px 0; color:#000;}
-    .balance-label {font-size:14px; font-weight:600;}
-    .balance {font-size:40px; font-weight:bold; margin:10px 0;}
+    .warning {background:#2a1f00; color:#ffaa00; padding:15px; border-radius:12px; margin-bottom:20px; text-align:left; font-size:13px; border-left:3px solid #ffaa00;}
+    
+    .usdt-tag {display:inline-flex; align-items:center; gap:8px; background:#1a1a1a; padding:8px 16px; border-radius:20px; margin-bottom:20px; border:1px solid #333;}
+    
+    .qr-box {background:white; padding:20px; border-radius:15px; display:inline-block; margin:15px 0;}
+    .qr-box img {width:260px; height:260px;}
     
     .address-box {background:#1a1a1a; padding:18px; border-radius:12px; margin:20px 0; word-break:break-all; border:1px solid #333;}
-    .address-label {color:#aaa; font-size:12px; margin-bottom:8px; text-align:left;}
-    .address {font-size:14px; color:#00ff88; font-family:monospace; text-align:left;}
-    
-    .qr {background:white; padding:18px; border-radius:15px; display:inline-block; margin:15px 0;}
-    .qr img {width:240px; height:240px;}
+    .address-label {color:#aaa; font-size:12px; margin-bottom:8px; text-align:center;}
+    .address {font-size:14px; color:#00ff88; font-family:monospace; text-align:center; margin-bottom:12px;}
     
     .btn-copy {background:#00ff88; color:#000; padding:14px 30px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; width:100%; font-size:16px;}
     .btn-copy:active {transform:scale(0.97); background:#00cc66;}
     
-    .note {color:#ffaa00; font-size:13px; margin-top:20px; background:#2a1f00; padding:15px; border-radius:10px; text-align:left; border-left:3px solid #ffaa00;}
+    .note {color:#aaa; font-size:13px; margin-top:20px; text-align:left;}
   </style>
 </head>
 <body>
@@ -34,32 +34,35 @@
 <a href="index.html" class="back">← Back to Home</a>
 
 <div class="box">
-  <h1 style="color:#00ff88; margin-bottom:8px;">💰 My Wallet</h1>
-  <p style="color:#aaa; margin-bottom:20px;">Fund wallet to post products - $2 fee per post</p>
+  <h1 style="color:#00ff88; margin-bottom:15px;">Receive</h1>
   
-  <!-- BALANCE -->
-  <div class="balance-box">
-    <div class="balance-label">Available Balance</div>
-    <div class="balance" id="balance">$0.00</div>
+  <!-- WARNING -->
+  <div class="warning">
+    ⚠️ Only send Tether USDT (TRC20) assets to this address. Other assets will be lost forever.
   </div>
   
-  <!-- WALLET ADDRESS -->
-  <div class="address-box">
-    <div class="address-label">Your USDT TRC20 Deposit Address</div>
-    <div class="address" id="walletAddress">PASTE_YOUR_ADDRESS_HERE</div>
-    <button class="btn-copy" onclick="copyAddress()">📋 Copy Address</button>
+  <!-- USDT TAG -->
+  <div class="usdt-tag">
+    <span>US</span>
+    <b>USDT</b>
+    <span style="background:#333; padding:2px 8px; border-radius:8px; font-size:12px;">TRC20</span>
   </div>
   
   <!-- QR CODE -->
-  <div class="qr">
+  <div class="qr-box">
     <img id="qrCode" src="" alt="QR Code">
   </div>
   
+  <!-- ADDRESS -->
+  <div class="address-box">
+    <div class="address-label">USDT TRC20 Address</div>
+    <div class="address" id="walletAddress">PASTE_YOUR_ADDRESS_HERE</div>
+    <button class="btn-copy" onclick="copyAddress()">📋 Copy</button>
+  </div>
+  
   <div class="note">
-    <b>⚠️ Important:</b><br>
-    1. Send only USDT on TRC20 network<br>
-    2. After sending, screenshot and contact admin<br>
-    3. Wallet will be credited manually
+    No memo required <br><br>
+    After payment, send screenshot to admin to credit your account for $2 posting fee.
   </div>
 </div>
 
@@ -69,19 +72,15 @@ if(localStorage.getItem("marketSaleLoggedIn") !== "true"){
   window.location.href = "login.html";
 }
 
-// CHANGE THIS TO YOUR REAL USDT TRC20 ADDRESS
-const MY_WALLET_ADDRESS = "PASTE_YOUR_ADDRESS_HERE";
+// CHANGE THIS TO YOUR REAL USDT TRC20 ADDRESS FROM YOUR SCREENSHOT
+const MY_WALLET_ADDRESS = "TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T";
 
 document.addEventListener("DOMContentLoaded", function(){
-  // LOAD BALANCE
-  let balance = parseFloat(localStorage.getItem("marketSaleBalance")) || 0;
-  document.getElementById("balance").innerText = "$" + balance.toFixed(2);
-  
   // SET ADDRESS
   document.getElementById("walletAddress").innerText = MY_WALLET_ADDRESS;
   
   // GENERATE QR CODE
-  let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${MY_WALLET_ADDRESS}`;
+  let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${MY_WALLET_ADDRESS}`;
   document.getElementById("qrCode").src = qrUrl;
 });
 
