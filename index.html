@@ -7,33 +7,15 @@
   <link rel="icon" href="logo.png" type="image/png">
   <style>
     body {background: #0f0f0f; color: white; font-family: Arial; margin: 0; padding: 0;}
-    header {text-align: center; padding: 20px;}
-   .logo {width: 70px; height: 70px; border-radius: 15px;}
-    
-   .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
-   .main {flex: 3;}
-   .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content; position: sticky; top: 20px;}
-    
-   .fee-box {background: #0d3b1e; padding: 15px; border-radius: 12px; text-align: center;}
-   .fee {color: #00ff88; font-size: 32px; font-weight: bold;}
-   .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
-   .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
-   .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
-   .btn-email {background: #007bff;}
-   .btn-proof {background: #ff8800;}
-    
-    input, textarea {width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;}
-    input[type="file"] {border: 1px dashed #555; padding: 10px;}
-   .proof-preview {width: 100%; border-radius: 8px; margin-top: 10px; display: none;}
-   .product {border: 1px solid #333; padding: 15px; margin: 15px 0; border-radius: 10px; background: #1a1a1a;}
-   .product img {width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;}
-   .product h3 {margin: 5px 0; color: #00ff88;}
+    header {text-align: center; padding: 20px; border-bottom: 1px solid #333;}
+    .logo {width: 70px; height: 70px; border-radius: 15px;}
+    .nav a {color: #00ff88; margin: 0 15px; text-decoration: none;}
+    .container {max-width: 1200px; margin: auto; padding: 20px;}
+    .product {border: 1px solid #333; padding: 15px; margin: 15px 0; border-radius: 10px; background: #1a1a1a;}
+    .product img {width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;}
+    .product h3 {margin: 5px 0; color: #00ff88;}
+    .id-badge {background: #28a745; padding: 3px 8px; border-radius: 5px; font-size: 12px;}
     a {color: #00aaff; text-decoration: none;}
-    
-    @media (max-width: 900px) {
-     .container {flex-direction: column;}
-     .sidebar {position: static;}
-    }
   </style>
 </head>
 <body>
@@ -41,78 +23,32 @@
 <header>
   <img src="logo.png" alt="Market Sale Logo" class="logo">
   <h1>Market Sale</h1>
-  <p>Buy & Sell Anything</p>
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="post.html">Post Product</a>
+    <a href="pay.html">Pay $2 Fee</a>
+  </div>
 </header>
 
 <div class="container">
-  
-  <!-- MAIN: PRODUCTS -->
-  <div class="main">
-    <h2>📦 Post Your Product</h2>
-    <p style="color:#aaa; font-size:14px;">Upload proof in sidebar first, then post your product</p>
-    <form id="productForm">
-      <input type="text" id="title" placeholder="Product Name" required>
-      <input type="number" id="price" placeholder="Price in $" required>
-      <textarea id="desc" placeholder="Product Description" rows="3" required></textarea>
-      <input type="text" id="whatsapp" placeholder="Your WhatsApp Number e.g. 2348012345678" required>
-      <label>Product Image</label>
-      <input type="file" id="image" accept="image/*" required>
-      <button type="submit" class="btn">Post Product</button>
-    </form>
-
-    <h2>🛒 Products For Sale</h2>
-    <div id="productList">
-      <p>No products yet. Be the first to post!</p>
-    </div>
+  <h2>🛒 Products For Sale</h2>
+  <div id="productList">
+    <p>No approved products yet.</p>
   </div>
-  
-  <!-- SIDEBAR: PAYMENT + PROOF -->
-  <div class="sidebar">
-    <h3>One-time $2 fee to start selling</h3>
-    <div class="fee-box">
-      <p>Total Fee</p>
-      <div class="fee">$2.00</div>
-      <p>USDT TRC20 Only</p>
-    </div>
-
-    <div class="warning">
-      ⚠️ Send ONLY USDT on TRON TRC20. Other networks = Lost forever
-    </div>
-
-    <p>Send to this address</p>
-    <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
-    <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" alt="QR Code" style="width:100%; border-radius:10px; margin-top:10px;">
-    
-    <hr style="margin:20px 0; border:1px solid #333;">
-    
-    <!-- GREEN PLACE - PROOF OF PAYMENT -->
-    <div style="background:#0d3b1e; padding:15px; border-radius:12px;">
-      <h4>After Payment:</h4>
-      <p style="font-size:13px;">Upload your proof screenshot here</p>
-      
-      <input type="file" id="proofSidebar" accept="image/*">
-      <img id="proofPreview" class="proof-preview" alt="Proof Preview">
-      
-      <button class="btn btn-proof" onclick="sendProof()">📧 Send Proof to Admin</button>
-    </div>
-
-    <a href="mailto:feargodemma56@gmail.com"><button class="btn btn-email">📧 Email: feargodemma56@gmail.com</button></a>
-  </div>
-
 </div>
 
 <script>
 let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
-let proofImage = "";
+let approved = products.filter(p => p.approved === true);
 
 function showProducts() {
-  if(products.length === 0) {
-    document.getElementById("productList").innerHTML = "<p>No products yet. Be the first to post!</p>";
+  if(approved.length === 0) {
+    document.getElementById("productList").innerHTML = "<p>No approved products yet.</p>";
     return;
   }
-  document.getElementById("productList").innerHTML = products.map(p => `
+  document.getElementById("productList").innerHTML = approved.map(p => `
     <div class="product">
+      <span class="id-badge">ID: ${p.id}</span>
       <img src="${p.image}" alt="${p.title}">
       <h3>${p.title} - $${p.price}</h3>
       <p>${p.desc}</p>
@@ -120,57 +56,6 @@ function showProducts() {
     </div>
   `).join("");
 }
-
-function toBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
-
-// Proof upload in sidebar
-document.getElementById("proofSidebar").addEventListener("change", async e => {
-  const file = e.target.files[0];
-  if(file) {
-    proofImage = await toBase64(file);
-    document.getElementById("proofPreview").src = proofImage;
-    document.getElementById("proofPreview").style.display = "block";
-  }
-});
-
-function sendProof() {
-  if(!proofImage) {
-    alert("Please upload proof screenshot first");
-    return;
-  }
-  const subject = "Market Sale - Proof of $2 Listing Fee";
-  const body = `Hello Admin,%0A%0AI have sent $2 USDT. Please find my proof screenshot attached.%0A%0AThank you`;
-  window.open(`mailto:feargodemma56@gmail.com?subject=${subject}&body=${body}`);
-  alert("Email opened. Please attach the proof image from your phone and send to feargodemma56@gmail.com");
-}
-
-// Product form
-document.getElementById("productForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const imageFile = document.getElementById("image").files[0];
-  const imageBase64 = await toBase64(imageFile);
-  
-  let newProduct = {
-    title: document.getElementById("title").value,
-    price: document.getElementById("price").value,
-    desc: document.getElementById("desc").value,
-    whatsapp: document.getElementById("whatsapp").value,
-    image: imageBase64
-  };
-  
-  products.unshift(newProduct);
-  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
-  showProducts();
-  alert("Product Posted!");
-  e.target.reset();
-});
 
 showProducts();
 </script>
