@@ -12,7 +12,7 @@
     .nav a {color: #00ff88; margin: 0 15px; text-decoration: none;}
     .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
     .main {flex: 3;}
-    .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content;}
+    .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content; position: sticky; top: 20px;}
     .fee-box {background: #0d3b1e; padding: 15px; border-radius: 12px; text-align: center;}
     .fee {color: #00ff88; font-size: 32px; font-weight: bold;}
     .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
@@ -22,7 +22,6 @@
     input, textarea {width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;}
     .proof-preview {width: 100%; border-radius: 8px; margin-top: 10px; display: none;}
     .pending {border-left: 4px solid orange; padding: 10px; background: #1a1a1a; margin: 10px 0;}
-    .login-box {background: #1a1a1a; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none;}
     @media (max-width: 900px) {.container {flex-direction: column;} .sidebar {position: static;}}
   </style>
 </head>
@@ -42,7 +41,7 @@
   <!-- MAIN: POST FORM -->
   <div class="main">
     <h2>📦 Post Your Product</h2>
-    <p style="color:#aaa;">Submit product. You will get email to approve</p>
+    <p style="color:#aaa;">Submit product. Check your email to Approve</p>
     <form id="productForm">
       <input type="text" id="title" placeholder="Product Name" required>
       <input type="number" id="price" placeholder="Price in $" required>
@@ -57,7 +56,7 @@
     <div id="pendingList"></div>
   </div>
   
-  <!-- SIDEBAR: PAYMENT + ADMIN LOGIN -->
+  <!-- SIDEBAR: PAYMENT -->
   <div class="sidebar">
     <h3>One-time $2 fee</h3>
     <div class="fee-box">
@@ -65,8 +64,10 @@
       <p>USDT TRC20 Only</p>
     </div>
     <div class="warning">⚠️ Send ONLY USDT on TRON TRC20</div>
+    <p>Send to:</p>
     <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
     <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" style="width:100%; border-radius:10px;">
     
     <hr style="margin:20px 0;">
     <div style="background:#0d3b1e; padding:15px; border-radius:12px;">
@@ -75,24 +76,18 @@
       <img id="proofPreview" class="proof-preview">
       <button class="btn btn-blue" onclick="sendProof()">📧 Send Proof to Admin</button>
     </div>
-
-    <!-- 3 WORD LOGIN -->
-    <div class="login-box" id="loginBox">
-      <h4>🔒 Admin Login</h4>
-      <input type="text" id="secretKey" placeholder="Enter 3 word key">
-      <button class="btn btn-blue" onclick="checkKey()">Login</button>
-    </div>
+    <a href="mailto:feargodemma56@gmail.com"><button class="btn">📧 Email: feargodemma56@gmail.com</button></a>
   </div>
 </div>
 
 <script>
 const ADMIN_EMAIL = "feargodemma56@gmail.com";
-const SECRET_KEY = "apple mango rice"; // CHANGE THESE 3 WORDS
+const SECRET_KEY = "apple mango rice"; // CHANGE TO YOUR 3 WORDS
 let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
 let proofImage = "";
 let nextId = products.length > 0 ? Math.max(...products.map(p=>p.id)) + 1 : 1;
 
-// Check URL for ?action=approve&id=5&key=applemango
+// Auto approve/remove from email link
 window.onload = function() {
   const urlParams = new URLSearchParams(window.location.search);
   const action = urlParams.get('action');
@@ -103,10 +98,6 @@ window.onload = function() {
     if(action === 'approve') approveProductById(id);
     if(action === 'remove') removeProductById(id);
   }
-  
-  // Show login box if ?admin=true in url
-  if(urlParams.get('admin') === 'true') document.getElementById('loginBox').style.display = 'block';
-  
   showPending();
 }
 
@@ -140,14 +131,6 @@ function sendProof() {
   alert("Attach the proof image and send");
 }
 
-function checkKey() {
-  let key = document.getElementById('secretKey').value.toLowerCase().trim();
-  if(key === SECRET_KEY) {
-    alert("Login successful. Admin mode ON");
-    sessionStorage.setItem("admin", "true");
-  } else alert("Wrong 3 word key");
-}
-
 document.getElementById("productForm").addEventListener("submit", async e => {
   e.preventDefault();
   const imageFile = document.getElementById("image").files[0];
@@ -166,13 +149,13 @@ document.getElementById("productForm").addEventListener("submit", async e => {
   products.push(newProduct);
   localStorage.setItem("marketSaleProducts", JSON.stringify(products));
   
-  // Send email to you with approve/remove links
+  // Send email to admin with links
   const keyNoSpace = SECRET_KEY.replace(/ /g,'');
   const approveLink = `${window.location.origin}/post.html?action=approve&id=${newProduct.id}&key=${keyNoSpace}`;
   const removeLink = `${window.location.origin}/post.html?action=remove&id=${newProduct.id}&key=${keyNoSpace}`;
   
-  const subject = `New Product Pending Approval - ID ${newProduct.id}`;
-  const body = `New Product: ${newProduct.title} - $${newProduct.price}%0A%0AApprove: ${approveLink}%0ARemove: ${removeLink}`;
+  const subject = `New Product Pending - ID ${newProduct.id}: ${newProduct.title}`;
+  const body = `Product: ${newProduct.title} - $${newProduct.price}%0AWhatsApp: ${newProduct.whatsapp}%0A%0A✅ APPROVE: ${approveLink}%0A❌ REMOVE: ${removeLink}`;
   window.open(`mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`);
   
   alert(`Product Submitted! ID: ${newProduct.id} \n\nCheck your email to Approve or Remove`);
@@ -185,15 +168,15 @@ function approveProductById(id) {
   if(p) {
     p.approved = true;
     localStorage.setItem("marketSaleProducts", JSON.stringify(products));
-    alert(`Product ID ${id} Approved!`);
-    window.location.href = 'post.html'; // reload clean
+    alert(`✅ Product ID ${id} Approved!`);
+    window.location.href = 'post.html';
   }
 }
 
 function removeProductById(id) {
   products = products.filter(x => x.id !== id);
   localStorage.setItem("marketSaleProducts", JSON.stringify(products));
-  alert(`Product ID ${id} Removed!`);
+  alert(`❌ Product ID ${id} Removed!`);
   window.location.href = 'post.html';
 }
 </script>
