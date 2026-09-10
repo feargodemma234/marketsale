@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pay $2 Fee - Market Sale</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    body {background:#0f0f0f; color:white; font-family:Arial; margin:0;}
+    header {text-align:center; padding:20px; border-bottom:1px solid #333;}
+   .nav {display:flex; justify-content:center; gap:25px; margin-top:15px; flex-wrap:nowrap;}
+   .nav a {color:#00ff88; text-decoration:none; font-weight:600; font-size:16px; white-space:nowrap;}
+   .nav a.active {text-decoration:underline; font-weight:bold;}
+   .container {max-width:600px; margin:40px auto; padding:25px; background:#151515; border-radius:15px;}
+   .btn {background:#00ff88; color:#000; padding:18px 35px; border-radius:10px; border:none; font-size:20px; font-weight:bold; cursor:pointer; margin:12px 0; width:100%;}
+   .btn-wa {background:#25D366;}
+   
+   .alert {background:#4a0f0f; color:#ff4444; padding:15px; border-radius:10px; font-size:14px; margin-bottom:20px; display:flex; gap:10px; border:1px solid #ff4444;}
+   .section-title {font-size:16px; margin:20px 0 10px 0; color:#aaa;}
+   .wallet-address {background:#1a1a1a; padding:16px; border-radius:10px; font-family:monospace; font-size:13px; word-break:break-all; color:#fff; border:1px solid #333;}
+   .copy-btn {background:#00ff88; color:#000; padding:14px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; width:100%; font-size:16px; margin:12px 0;}
+   .qr-code {width:100%; max-width:280px; background:white; padding:15px; border-radius:12px; margin:20px auto; display:block;}
+   .after-title {font-size:18px; font-weight:bold; margin:25px 0 10px 0;}
+   .email-btn {background:#007bff; color:white; padding:16px; border-radius:10px; text-decoration:none; display:block; text-align:center; font-weight:bold; font-size:16px; margin-top:15px;}
+   .warning {background:#3b0d0d; color:#ff7777; padding:15px; border-radius:10px; font-size:14px; margin-top:20px; text-align:center;}
+   .coming-soon {color:#ffaa00; text-align:center; font-size:15px; margin-top:8px; display:none;}
+    @media(max-width:600px){.nav {gap:15px;}.nav a {font-size:15px;}}
+  </style>
+</head>
+<body>
+<script>if(!localStorage.getItem("marketSaleLoggedIn")){alert("Please login first"); window.location.href = "login.html";}</script>
+
+<header>
+  <h1>💳 Pay Listing Fee</h1>
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="post.html">Post Product</a>
+    <a href="pay.html" class="active">Pay $2 Fee</a>
+  </div>
+</header>
+
+<div class="container">
+  <h2 style="text-align:center;">Pay $2 to List Your Product</h2>
+  <p style="color:#aaa; font-size:15px; text-align:center;">One time fee per product. Keeps scammers away.</p>
+  
+  <!-- CARD BUTTON - NO MORE ALERT POPUP -->
+  <button class="btn" onclick="showCardMsg()">💳 Pay with Card</button>
+  <div id="cardMsg" class="coming-soon">Card payment coming soon!</div>
+  
+  <button class="btn btn-wa" onclick="document.getElementById('wallet-section').scrollIntoView()">💰 Pay with Transfer</button>
+
+  <div id="wallet-section">
+    <!-- RED WARNING -->
+    <div class="alert">
+      <span>⚠️</span>
+      <span>Send ONLY USDT on TRON TRC20. Other networks = Lost forever</span>
+    </div>
+
+    <div class="section-title">Send to this address</div>
+    <div class="wallet-address" id="wallet">TRzfCcrUmc212VLEYNYVRKtSuYQSnaIU6T</div>
+    <button class="copy-btn" onclick="copyWallet()">📋 Copy Address</button>
+
+    <!-- QR CODE -->
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaIU6T" class="qr-code" alt="Wallet QR">
+    
+    <hr style="border:1px solid #333; margin:25px 0;">
+    
+    <div class="after-title">After Payment:</div>
+    <p style="color:#aaa; font-size:15px;">Upload your proof in the form and it will be sent to admin for approval</p>
+
+    <a href="mailto:feargodemma56@gmail.com?subject=Payment Proof for Market Sale" class="email-btn">📧 Email: feargodemma56@gmail.com</a>
+  </div>
+  
+  <div class="warning">
+    ⚠️ Note: Send exact $2 USDT. Wait 5-10min for approval.
+  </div>
+</div>
+
+<script>
+function copyWallet() {
+  let wallet = document.getElementById("wallet").innerText;
+  navigator.clipboard.writeText(wallet);
+  alert("Wallet address copied!");
+}
+
+function showCardMsg(){
+  document.getElementById("cardMsg").style.display = "block";
+}
+</script>
+</body>
+</html>
