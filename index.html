@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Market Sale - Dashboard</title>
+  <title>Market Sale - Home</title>
   <link rel="icon" href="logo.png" type="image/png">
   <style>
     * {margin:0; padding:0; box-sizing:border-box;}
@@ -14,63 +14,121 @@
     .navbar .logo {width:40px; height:40px; border-radius:10px;}
     .nav-right {display:flex; align-items:center; gap:15px;}
     .welcome {color:#00ff88; font-weight:600; font-size:15px;}
-    .btn-logout {background:#ff4444; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px;}
-    .btn-logout:hover {background:#cc0000;}
+    .btn-logout {background:#ff4444; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;}
     
-    /* MAIN CONTENT */
-    .container {padding:30px 20px; max-width:1200px; margin:0 auto;}
-    .card {background:#151515; padding:25px; border-radius:15px; border:1px solid #333; margin-bottom:20px;}
-    h1 {color:#00ff88; margin-bottom:10px;}
-    p {color:#aaa; line-height:1.6;}
+    /* HEADER */
+    .header {padding:20px; display:flex; justify-content:space-between; align-items:center;}
+    .btn-post {background:#00ff88; color:#000; padding:14px 25px; border-radius:10px; border:none; font-weight:bold; font-size:16px; cursor:pointer;}
+    .btn-post:active {transform:scale(0.95);}
+    
+    /* PRODUCTS GRID */
+    .container {padding:0 20px 30px; max-width:1200px; margin:0 auto;}
+    .products {display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:20px;}
+    .product-card {background:#151515; border-radius:15px; border:1px solid #333; overflow:hidden; cursor:pointer;}
+    .product-card:active {border-color:#00ff88;}
+    .product-img {width:100%; height:200px; background:#222; object-fit:cover;}
+    .product-info {padding:15px;}
+    .product-title {font-size:16px; font-weight:bold; margin-bottom:8px;}
+    .product-price {color:#00ff88; font-size:18px; font-weight:bold;}
+    .product-seller {font-size:12px; color:#aaa; margin-top:5px;}
+    
+    /* NO PRODUCTS */
+    .empty {text-align:center; padding:60px 20px; color:#666;}
   </style>
 </head>
 <body>
 
-<!-- PROTECTION SCRIPT - RUNS FIRST -->
+<!-- NAVBAR -->
+<div class="navbar">
+  <img src="logo.png" class="logo">
+  <div class="nav-right">
+    <span id="welcomeUser" class="welcome">Welcome</span>
+    <button id="logoutBtn" class="btn-logout">Logout</button>
+  </div>
+</div>
+
+<!-- HEADER WITH POST BUTTON -->
+<div class="header">
+  <h1 style="color:#00ff88;">Marketplace</h1>
+  <button id="postBtn" class="btn-post">+ Post Product $2</button>
+</div>
+
+<!-- PRODUCTS -->
+<div class="container">
+  <div id="productsGrid" class="products">
+    <!-- PRODUCTS WILL LOAD HERE -->
+  </div>
+  <div id="emptyMsg" class="empty" style="display:none;">
+    <h2>No products yet</h2>
+    <p>Be the first to post!</p>
+  </div>
+</div>
+
 <script>
-// 1. PROTECT PAGE - If not logged in, go to login
+// PROTECT PAGE
 if(localStorage.getItem("marketSaleLoggedIn") !== "true"){
   window.location.href = "login.html";
 }
 
-// 2. SHOW USER NAME WHEN PAGE LOADS
-window.onload = function(){
+document.addEventListener("DOMContentLoaded", function(){
   let user = JSON.parse(localStorage.getItem("marketSaleUser"));
   if(user){
-    document.getElementById("welcomeUser").innerText = "Welcome, " + user.name;
+    document.getElementById("welcomeUser").innerText = "Welcome, " + user.name.toUpperCase();
   }
+  
+  // LOGOUT
+  document.getElementById("logoutBtn").addEventListener("click", function(){
+    localStorage.removeItem("marketSaleLoggedIn");
+    localStorage.removeItem("marketSaleUser");
+    window.location.href = "login.html";
+  });
+  
+  // POST PRODUCT BUTTON - $2 FEE
+  document.getElementById("postBtn").addEventListener("click", function(){
+    let balance = parseFloat(localStorage.getItem("marketSaleBalance")) || 0;
+    
+    if(balance < 2){
+      alert("You need $2 to post a product. Current balance: $" + balance.toFixed(2));
+      // window.location.href = "wallet.html"; // send to wallet to fund
+      return;
+    }
+    
+    // Deduct $2 and go to post page
+    localStorage.setItem("marketSaleBalance", balance - 2);
+    window.location.href = "post-product.html";
+  });
+  
+  loadProducts();
+});
+
+// LOAD PRODUCTS FROM LOCALSTORAGE
+function loadProducts(){
+  let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+  let grid = document.getElementById("productsGrid");
+  let empty = document.getElementById("emptyMsg");
+  
+  if(products.length === 0){
+    empty.style.display = "block";
+    return;
+  }
+  
+  grid.innerHTML = products.map(p => `
+    <div class="product-card" onclick="viewProduct('${p.id}')">
+      <img src="${p.image || 'placeholder.jpg'}" class="product-img">
+      <div class="product-info">
+        <div class="product-title">${p.title}</div>
+        <div class="product-price">$${p.price}</div>
+        <div class="product-seller">by ${p.seller}</div>
+      </div>
+    </div>
+  `).join('');
 }
 
-// 3. LOGOUT FUNCTION
-function logout(){
-  localStorage.removeItem("marketSaleLoggedIn");
-  localStorage.removeItem("marketSaleUser");
-  window.location.href = "login.html";
+function viewProduct(id){
+  localStorage.setItem("viewProductId", id);
+  window.location.href = "product-detail.html";
 }
 </script>
-
-<!-- NAVBAR -->
-<div class="navbar">
-  <img src="logo.png" class="logo">
-  
-  <div class="nav-right">
-    <span id="welcomeUser" class="welcome">Welcome</span>
-    <button onclick="logout()" class="btn-logout">Logout</button>
-  </div>
-</div>
-
-<!-- MAIN CONTENT -->
-<div class="container">
-  <div class="card">
-    <h1>📊 Market Sale Dashboard</h1>
-    <p>Welcome to your trustworthy account. This page is now protected.</p>
-  </div>
-  
-  <div class="card">
-    <h2 style="color:#00ff88; margin-bottom:15px;">Your Account</h2>
-    <p>Only logged in users can see this page.</p>
-  </div>
-</div>
 
 </body>
 </html>
