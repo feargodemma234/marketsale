@@ -15,8 +15,6 @@
     .message {padding:14px; border-radius:10px; margin-bottom:15px; font-size:15px; text-align:left; display:none;}
     .message.success {background:#0a3d0a; color:#00ff88; border:1px solid #00ff88;}
     .message.error {background:#4a0f0f; color:#ff4444; border:1px solid #ff4444;}
-    
-    /* PASSWORD WITH EYE */
     .password-wrapper {position:relative; width:100%;}
     .password-wrapper input {padding-right:50px;}
     .toggle-eye {position:absolute; right:15px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:20px; color:#888;}
@@ -30,12 +28,10 @@
   <div id="messageBox" class="message"></div>
   
   <input type="email" id="email" placeholder="Email">
-  
   <div class="password-wrapper">
     <input type="password" id="password" placeholder="Password">
     <span class="toggle-eye" onclick="togglePassword()">👁️</span>
   </div>
-  
   <button onclick="login()">Login</button>
   <p style="margin-top:20px; color:#aaa;">Don't have account? <a href="signup.html">Sign Up</a></p>
 </div>
@@ -46,19 +42,14 @@ function showMessage(text, type){
   box.className = "message " + type;
   box.innerText = text;
   box.style.display = "block";
-  setTimeout(() => {box.style.display = "none";}, 3000);
+  setTimeout(() => {box.style.display = "none";}, 4000);
 }
 
 function togglePassword(){
   let pass = document.getElementById("password");
   let eye = document.querySelector(".toggle-eye");
-  if(pass.type === "password"){
-    pass.type = "text"; // SHOW PASSWORD
-    eye.innerText = "🙈"; // change to hide icon
-  } else {
-    pass.type = "password"; // HIDE PASSWORD
-    eye.innerText = "👁️"; // change to eye icon
-  }
+  if(pass.type === "password"){pass.type = "text"; eye.innerText = "🙈";} 
+  else {pass.type = "password"; eye.innerText = "👁️";}
 }
 
 function login() {
@@ -71,19 +62,25 @@ function login() {
   }
   
   let users = JSON.parse(localStorage.getItem("marketSaleUsers")) || [];
+  console.log("All users:", users); // for debugging
+  console.log("Trying:", email, password);
+  
   let user = users.find(u => u.email === email && u.password === password);
   
   if(user) {
     localStorage.setItem("marketSaleLoggedIn", "true");
     localStorage.setItem("marketSaleUser", JSON.stringify(user));
     showMessage("Login Successful! Redirecting...", "success");
-    
-    setTimeout(() => {
-      window.location.href = "index.html";
-    }, 1500);
+    setTimeout(() => {window.location.href = "index.html";}, 1500);
     
   } else {
-    showMessage("Invalid email or password", "error");
+    // Check if email exists but password wrong
+    let emailExists = users.find(u => u.email === email);
+    if(emailExists){
+      showMessage("Password is wrong. Try making a new account.", "error");
+    } else {
+      showMessage("Account not found. Please sign up first.", "error");
+    }
   }
 }
 </script>
