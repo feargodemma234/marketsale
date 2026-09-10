@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pay $2 Fee - Market Sale</title>
+  <title>Post Product - Market Sale</title>
   <link rel="icon" href="logo.png" type="image/png">
   <style>
     body {background:#0f0f0f; color:white; font-family:Arial; margin:0;}
     header {text-align:center; padding:20px; border-bottom:1px solid #333;}
-    .nav a {color:#00ff88; margin:0 15px; text-decoration:none; font-weight:bold;}
-    .nav a:hover {text-decoration:underline;}
-    .container {max-width:600px; margin:40px auto; padding:20px; background:#151515; border-radius:15px; text-align:center;}
-    .btn {background:#00ff88; color:#000; padding:15px 30px; border-radius:10px; border:none; font-size:18px; font-weight:bold; cursor:pointer; margin:10px;}
-    .btn:hover {opacity:0.9;}
-    .warning {background:#3b0d0d; color:#ff7777; padding:12px; border-radius:8px; font-size:12px; margin-top:20px;}
+   .nav a {color:#00ff88; margin:0 20px; text-decoration:none; font-weight:bold; font-size:18px;}
+   .nav a:hover {text-decoration:underline;}
+   .container {max-width:700px; margin:30px auto; padding:20px;}
+    input, textarea {width:100%; padding:16px; margin:12px 0; border-radius:10px; border:1px solid #444; background:#1a1a1a; color:white; font-size:16px; box-sizing:border-box;}
+   .btn {background:#00ff88; color:#000; padding:16px 24px; border-radius:10px; border:none; font-weight:bold; font-size:17px; cursor:pointer;}
+   .pending {background:#151515; padding:18px; border-radius:10px; margin:12px 0; border:1px solid #333; cursor:pointer;}
+   .pending span {background:#ff8800; padding:5px 10px; border-radius:6px; font-size:13px;}
+    h1 {font-size:32px;}
+    h2 {font-size:24px;}
   </style>
 </head>
 <body>
@@ -26,33 +29,82 @@ if(!localStorage.getItem("marketSaleLoggedIn")){
 </script>
 
 <header>
-  <h1>💳 Pay Listing Fee</h1>
+  <h1>📦 Post a Product</h1>
   <div class="nav">
     <a href="index.html">Home</a>
     <a href="post.html">Post Product</a>
     <a href="pay.html">Pay $2 Fee</a>
-    <a href="#" onclick="logout()">Logout</a>
   </div>
 </header>
 
 <div class="container">
-  <h2>Pay $2 to List Your Product</h2>
-  <p style="color:#aaa;">One time fee per product. Keeps scammers away.</p>
-  
-  <button class="btn" onclick="alert('Payment system coming soon! For now just post your product.')">Pay with Card</button>
-  <button class="btn" style="background:#25D366;" onclick="alert('Pay with WhatsApp/Transfer')">Pay with Transfer</button>
-  
-  <div class="warning">
-    ⚠️ Note: This is a demo. No real payment is taken yet.
-  </div>
+  <h2>Add New Product</h2>
+  <input type="text" id="title" placeholder="Product Title">
+  <input type="number" id="price" placeholder="Price in $">
+  <textarea id="desc" placeholder="Description" rows="4"></textarea>
+  <input type="text" id="whatsapp" placeholder="WhatsApp Number with country code">
+  <input type="file" id="image" accept="image/*">
+  <button class="btn" onclick="postProduct()">Post Product</button>
+
+  <h3 style="margin-top:40px;">⏳ Pending Products - Tap to Approve</h3>
+  <div id="pendingList"></div>
 </div>
 
 <script>
-function logout(){
-  localStorage.removeItem("marketSaleLoggedIn");
-  alert("Logged out");
-  location.href="login.html";
+function postProduct() {
+  let title = document.getElementById("title").value;
+  let price = document.getElementById("price").value;
+  let desc = document.getElementById("desc").value;
+  let whatsapp = document.getElementById("whatsapp").value;
+  let file = document.getElementById("image").files[0];
+  
+  if(!title ||!price ||!desc ||!whatsapp ||!file) return alert("Fill all fields");
+  
+  let reader = new FileReader();
+  reader.onload = function(e) {
+    let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+    let newProduct = {
+      id: Date.now(),
+      title, price, desc, whatsapp,
+      image: e.target.result,
+      approved: false
+    };
+    products.push(newProduct);
+    localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+    alert("Product submitted! Waiting for approval.");
+    showPending();
+  };
+  reader.readAsDataURL(file);
 }
+
+function showPending() {
+  let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+  let pending = products.filter(p =>!p.approved);
+  document.getElementById("pendingList").innerHTML = pending.length === 0? "<p>No pending products</p>" :
+  pending.map(p => `
+    <div class="pending" onclick="approveProduct(${p.id})">
+      <span>ID: ${p.id}</span>
+      <h4>${p.title} - $${p.price}</h4>
+      <p>Tap to enter approval key</p>
+    </div>
+  `).join("");
+}
+
+function approveProduct(id) {
+  let key = prompt("Enter approval key:");
+  if(key === "1234") {
+    let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+    let p = products.find(x => x.id === id);
+    if(p) p.approved = true;
+    localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+    alert("Product Approved!");
+    showPending();
+  } else {
+    alert("Wrong key");
+  }
+}
+
+window.onload = showPending;
 </script>
 </body>
 </html>
