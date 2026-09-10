@@ -18,10 +18,12 @@
     .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
     .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
     .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
+    .btn-red {background: #dc3545;}
     .btn-blue {background: #007bff;}
     input, textarea {width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;}
     .proof-preview {width: 100%; border-radius: 8px; margin-top: 10px; display: none;}
     .pending {border-left: 4px solid orange; padding: 10px; background: #1a1a1a; margin: 10px 0;}
+    .admin-panel {display: none; background: #0d3b1e; padding: 15px; border-radius: 12px; margin-top: 20px;}
     @media (max-width: 900px) {.container {flex-direction: column;} .sidebar {position: static;}}
   </style>
 </head>
@@ -40,7 +42,7 @@
 <div class="container">
   <div class="main">
     <h2>📦 Post Your Product</h2>
-    <p style="color:#aaa;">Submit product. Check your email to Approve/Remove</p>
+    <p style="color:#aaa;">Submit product. You get 1 short link in email</p>
     <form id="productForm">
       <input type="text" id="title" placeholder="Product Name" required>
       <input type="number" id="price" placeholder="Price in $" required>
@@ -53,6 +55,13 @@
 
     <h2>⏳ Pending Products</h2>
     <div id="pendingList"></div>
+
+    <!-- ADMIN PANEL SHOWS AFTER KEY -->
+    <div class="admin-panel" id="adminPanel">
+      <h3>Admin: Product ID <span id="adminId"></span></h3>
+      <button class="btn" onclick="approveNow()">✅ Approve - Show on Homepage</button>
+      <button class="btn btn-red" onclick="removeNow()">❌ Remove - Delete</button>
+    </div>
   </div>
   
   <div class="sidebar">
@@ -67,12 +76,10 @@
     
     <hr style="margin:20px 0;">
     <div style="background:#0d3b1e; padding:15px; border-radius:12px;">
-      <h4>After Payment:</h4>
-      <input type="file" id="proofSidebar" accept="image/*">
-      <img id="proofPreview" class="proof-preview">
-      <button class="btn btn-blue" onclick="sendProof()">📧 Send Proof to Admin</button>
+      <h4>🔒 Admin Login</h4>
+      <input type="text" id="secretKey" placeholder="Enter 3 word key">
+      <button class="btn btn-blue" onclick="checkKey()">Unlock</button>
     </div>
-    <a href="mailto:feargodemma56@gmail.com"><button class="btn">📧 Email: feargodemma56@gmail.com</button></a>
   </div>
 </div>
 
@@ -81,18 +88,17 @@ const ADMIN_EMAIL = "feargodemma56@gmail.com";
 const SECRET_KEY = "apple mango rice"; // CHANGE TO YOUR 3 WORDS
 let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
 let proofImage = "";
+let currentId = null;
 let nextId = products.length > 0 ? Math.max(...products.map(p=>p.id)) + 1 : 1;
 
-// Auto approve/remove from email link
+// Check if we opened ?id=2
 window.onload = function() {
   const urlParams = new URLSearchParams(window.location.search);
-  const action = urlParams.get('action');
   const id = parseInt(urlParams.get('id'));
-  const key = urlParams.get('key');
-  
-  if(action && id && key === SECRET_KEY.replace(/ /g,'')) {
-    if(action === 'approve') approveProductById(id);
-    if(action === 'remove') removeProductById(id);
+  if(id) {
+    currentId = id;
+    document.getElementById('adminId').innerText = id;
+    alert("Product ID " + id + " loaded. Enter 3 word key to approve/remove");
   }
   showPending();
 }
@@ -104,27 +110,11 @@ function showPending() {
 }
 
 function toBase64(file) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
   });
-}
-
-document.getElementById("proofSidebar").addEventListener("change", async e => {
-  const file = e.target.files[0];
-  if(file) {
-    proofImage = await toBase64(file);
-    document.getElementById("proofPreview").src = proofImage;
-    document.getElementById("proofPreview").style.display = "block";
-  }
-});
-
-function sendProof() {
-  if(!proofImage) return alert("Upload proof first");
-  window.open(`mailto:${ADMIN_EMAIL}?subject=Market Sale Proof`);
-  alert("Attach the proof image and send");
 }
 
 document.getElementById("productForm").addEventListener("submit", async e => {
@@ -145,34 +135,44 @@ document.getElementById("productForm").addEventListener("submit", async e => {
   products.push(newProduct);
   localStorage.setItem("marketSaleProducts", JSON.stringify(products));
   
-  // Send email to admin with BOTH links
-  const keyNoSpace = SECRET_KEY.replace(/ /g,'');
-  const approveLink = `${window.location.origin}/post.html?action=approve&id=${newProduct.id}&key=${keyNoSpace}`;
-  const removeLink = `${window.location.origin}/post.html?action=remove&id=${newProduct.id}&key=${keyNoSpace}`;
-  
-  const subject = `New Product Pending - ID ${newProduct.id}: ${newProduct.title}`;
-  const body = `Product: ${newProduct.title} - $${newProduct.price}%0AWhatsApp: ${newProduct.whatsapp}%0A%0A✅ APPROVE: ${approveLink}%0A❌ REMOVE: ${removeLink}`;
+  // Send SHORT link only
+  const productLink = `${window.location.origin}/post.html?id=${newProduct.id}`;
+  const subject = `New Product ID ${newProduct.id}: ${newProduct.title}`;
+  const body = `Product: ${newProduct.title} - $${newProduct.price}%0A%0AReview: ${productLink}`;
   window.open(`mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`);
   
-  alert(`Product Submitted! ID: ${newProduct.id} \n\nCheck your email to Approve or Remove`);
+  alert(`Product Submitted! ID: ${newProduct.id} \n\nCheck email for short link`);
   e.target.reset();
   showPending();
 });
 
-function approveProductById(id) {
-  let p = products.find(x => x.id === id);
+function checkKey() {
+  let key = document.getElementById('secretKey').value.trim();
+  if(key === SECRET_KEY) {
+    if(currentId) {
+      document.getElementById('adminPanel').style.display = 'block';
+    } else {
+      alert("Key correct. Open a product link first: ?id=1");
+    }
+  } else {
+    alert("Wrong 3 word key");
+  }
+}
+
+function approveNow() {
+  let p = products.find(x => x.id === currentId);
   if(p) {
     p.approved = true;
     localStorage.setItem("marketSaleProducts", JSON.stringify(products));
-    alert(`✅ Product ID ${id} Approved!`);
+    alert(`✅ Product ID ${currentId} Approved! Now on homepage`);
     window.location.href = 'post.html';
   }
 }
 
-function removeProductById(id) {
-  products = products.filter(x => x.id !== id);
+function removeNow() {
+  products = products.filter(x => x.id !== currentId);
   localStorage.setItem("marketSaleProducts", JSON.stringify(products));
-  alert(`❌ Product ID ${id} Removed!`);
+  alert(`❌ Product ID ${currentId} Removed!`);
   window.location.href = 'post.html';
 }
 </script>
