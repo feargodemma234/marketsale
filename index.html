@@ -3,69 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Market sale payment</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Market Sale</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    body {background: #0f0f0f; color: white; font-family: Arial; text-align: center; padding: 20px;}
+    .logo {width: 80px; height: 80px; border-radius: 20px; margin: 10px auto;}
+    .fee-box {background: #0d3b1e; padding: 20px; border-radius: 15px; margin: 20px 0;}
+    .fee {color: #00ff88; font-size: 36px; font-weight: bold;}
+    .warning {background: #3b0d0d; color: #ff7777; padding: 15px; border-radius: 10px; margin: 15px 0;}
+    .address {background: #1a1a1a; padding: 15px; border-radius: 10px; word-break: break-all;}
+    .btn {background: #28a745; color: white; padding: 15px; border-radius: 10px; border: none; width: 90%; font-size: 16px; margin: 10px 0;}
+    input, textarea {width: 90%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white;}
+    .product {border: 1px solid #333; padding: 15px; margin: 15px 0; border-radius: 10px; background: #1a1a1a; text-align: left;}
+    .product h3 {margin: 0; color: #00ff88;}
+    a {color: #00aaff; text-decoration: none;}
+  </style>
 </head>
-<body class="bg-[#0B0E13] text-white flex items-center justify-center min-h-screen p-4">
-  
-  <div class="bg-[#161A20] w-full max-w-md rounded-3xl shadow-2xl p-8 border border-[#2A313C]">
-    
-    <!-- LOGO -->
-    <div class="text-center mb-6">
-      <img src="logo.png" class="w-16 h-16 mx-auto rounded-2xl mb-3" alt="Market Logo">
-      <h1 class="text-2xl font-bold">Market sale</h1>
-      <p class="text-gray-400 text-sm">One-time $2 fee to start selling</p>
-    </div>
+<body>
 
-    <!-- PRICE CARD -->
-    <div class="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30 p-5 rounded-2xl mb-6 text-center">
-      <p class="text-gray-400 text-sm">Total Fee</p>
-      <p class="text-4xl font-bold text-green-400">$2.00</p>
-      <p class="text-gray-400 text-xs mt-1">USDT TRC20 Only</p>
-    </div>
+  <img src="logo.png" alt="Market Sale Logo" class="logo">
+  <h1>Market Sale</h1>
+  <p>One-time $2 fee to start selling</p>
 
-    <!-- WARNING -->
-    <div class="bg-red-900/30 border-red-700/50 p-3 rounded-xl mb-6 text-sm">
-      ⚠️ Send ONLY USDT on TRON TRC20. Other networks = Lost forever
-    </div>
-
-    <!-- WALLET -->
-    <div class="bg-[#0B0E13] p-4 rounded-xl mb-4 border border-[#2A313C]">
-      <p class="text-gray-400 text-xs mb-2">Send to this address</p>
-      <p id="wallet" class="font-mono text-xs break-all">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</p>
-    </div>
-
-    <button onclick="copyWallet()" class="w-full bg-green-500 hover:bg-green-600 py-3 rounded-xl font-bold mb-4 transition">
-      📋 Copy Address
-    </button>
-
-    <!-- QR -->
-    <div class="flex justify-center mb-6">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" 
-           class="bg-white p-3 rounded-2xl" alt="QR">
-    </div>
-
-    <!-- STEPS -->
-    <div class="text-xs text-gray-400 space-y-1 mb-6">
-      <p>1. Open TronLink / Binance</p>
-      <p>2. Send 2 USDT TRC20</p>
-      <p>3. Send proof below</p>
-    </div>
-
-    <!-- WHATSAPP -->
-    <a href="https://wa.me/2348061715444?text=Hello%20I%20paid%202%20USDT%20listing%20fee.%20Proof%20attached:" 
-       target="_blank"
-       class="w-full bg-[#25D366] hover:bg-[#20BA5A] py-3 rounded-xl font-bold text-center block transition">
-      ✅ Send Payment Proof
-    </a>
-
+  <div class="fee-box">
+    <p>Total Fee</p>
+    <div class="fee">$2.00</div>
+    <p>USDT TRC20 Only</p>
   </div>
 
-  <script>
-    function copyWallet() {
-      navigator.clipboard.writeText("TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T");
-      alert("✅ Address Copied!");
-    }
-  </script>
+  <div class="warning">
+    ⚠️ Send ONLY USDT on TRON TRC20. Other networks = Lost forever
+  </div>
+
+  <p>Send to this address</p>
+  <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
+  <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
+
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" alt="QR Code">
+
+  <hr style="margin: 40px 0; border: 1px solid #333;">
+
+  <h2>📦 Post Your Product</h2>
+  <form id="productForm">
+    <input type="text" id="title" placeholder="Product Name" required>
+    <input type="number" id="price" placeholder="Price in $" required>
+    <textarea id="desc" placeholder="Product Description" rows="3" required></textarea>
+    <input type="text" id="whatsapp" placeholder="Your WhatsApp Number e.g. 2348012345678" required>
+    <button type="submit" class="btn">Post Product</button>
+  </form>
+
+  <h2>🛒 Products For Sale</h2>
+  <div id="productList">
+    <p>No products yet. Be the first to post!</p>
+  </div>
+
+<script>
+let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
+
+function showProducts() {
+  if(products.length === 0) {
+    document.getElementById("productList").innerHTML = "<p>No products yet. Be the first to post!</p>";
+    return;
+  }
+  document.getElementById("productList").innerHTML = products.map(p => `
+    <div class="product">
+      <h3>${p.title} - $${p.price}</h3>
+      <p>${p.desc}</p>
+      <a href="https://wa.me/${p.whatsapp}" target="_blank">💬 Contact Seller on WhatsApp</a>
+    </div>
+  `).join("");
+}
+
+document.getElementById("productForm").addEventListener("submit", e => {
+  e.preventDefault();
+  let newProduct = {
+    title: document.getElementById("title").value,
+    price: document.getElementById("price").value,
+    desc: document.getElementById("desc").value,
+    whatsapp: document.getElementById("whatsapp").value
+  };
+  products.unshift(newProduct);
+  localStorage.setItem("marketSaleProducts", JSON.stringify(products));
+  showProducts();
+  e.target.reset();
+  alert("Product Posted!");
+});
+
+showProducts();
+</script>
+
 </body>
 </html>
