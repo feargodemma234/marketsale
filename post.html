@@ -8,23 +8,22 @@
   <style>
     body {background: #0f0f0f; color: white; font-family: Arial; margin: 0; padding: 0;}
     header {text-align: center; padding: 20px; border-bottom: 1px solid #333;}
-   .logo {width: 70px; height: 70px; border-radius: 15px;}
-   .nav a {color: #00ff88; margin: 0 15px; text-decoration: none;}
-   .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
-   .main {flex: 3;}
-   .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content; position: sticky; top: 20px;}
-   .fee-box {background: #0d3b1e; padding: 15px; border-radius: 12px; text-align: center;}
-   .fee {color: #00ff88; font-size: 32px; font-weight: bold;}
-   .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
-   .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
-   .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
-   .btn-red {background: #dc3545;}
-   .btn-blue {background: #007bff;}
+    .logo {width: 70px; height: 70px; border-radius: 15px;}
+    .nav a {color: #00ff88; margin: 0 15px; text-decoration: none;}
+    .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
+    .main {flex: 3;}
+    .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content;}
+    .fee-box {background: #0d3b1e; padding: 15px; border-radius: 12px; text-align: center;}
+    .fee {color: #00ff88; font-size: 32px; font-weight: bold;}
+    .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
+    .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
+    .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
+    .btn-blue {background: #007bff;}
     input, textarea {width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;}
-   .proof-preview {width: 100%; border-radius: 8px; margin-top: 10px; display: none;}
-   .pending {border-left: 4px solid orange; padding: 10px; background: #1a1a1a; margin: 10px 0;}
-   .admin-section {display: none;} /* hidden by default */
-    @media (max-width: 900px) {.container {flex-direction: column;}.sidebar {position: static;}}
+    .proof-preview {width: 100%; border-radius: 8px; margin-top: 10px; display: none;}
+    .pending {border-left: 4px solid orange; padding: 10px; background: #1a1a1a; margin: 10px 0;}
+    .login-box {background: #1a1a1a; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none;}
+    @media (max-width: 900px) {.container {flex-direction: column;} .sidebar {position: static;}}
   </style>
 </head>
 <body>
@@ -43,7 +42,7 @@
   <!-- MAIN: POST FORM -->
   <div class="main">
     <h2>📦 Post Your Product</h2>
-    <p style="color:#aaa;">Submit product. Admin will approve after payment</p>
+    <p style="color:#aaa;">Submit product. You will get email to approve</p>
     <form id="productForm">
       <input type="text" id="title" placeholder="Product Name" required>
       <input type="number" id="price" placeholder="Price in $" required>
@@ -58,7 +57,7 @@
     <div id="pendingList"></div>
   </div>
   
-  <!-- SIDEBAR: PAYMENT + ADMIN -->
+  <!-- SIDEBAR: PAYMENT + ADMIN LOGIN -->
   <div class="sidebar">
     <h3>One-time $2 fee</h3>
     <div class="fee-box">
@@ -66,10 +65,8 @@
       <p>USDT TRC20 Only</p>
     </div>
     <div class="warning">⚠️ Send ONLY USDT on TRON TRC20</div>
-    <p>Send to:</p>
     <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
     <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" style="width:100%; border-radius:10px;">
     
     <hr style="margin:20px 0;">
     <div style="background:#0d3b1e; padding:15px; border-radius:12px;">
@@ -79,45 +76,43 @@
       <button class="btn btn-blue" onclick="sendProof()">📧 Send Proof to Admin</button>
     </div>
 
-    <hr style="margin:20px 0;">
-    <!-- ADMIN SECTION -->
-    <div class="admin-section" id="adminPanel">
-      <h4>🛠️ Admin Panel</h4>
-      <input type="number" id="productIdInput" placeholder="Enter Product ID">
-      <button class="btn btn-blue" onclick="approveProduct()">✅ Approve by ID</button>
-      <button class="btn btn-red" onclick="removeProduct()">❌ Remove by ID</button>
+    <!-- 3 WORD LOGIN -->
+    <div class="login-box" id="loginBox">
+      <h4>🔒 Admin Login</h4>
+      <input type="text" id="secretKey" placeholder="Enter 3 word key">
+      <button class="btn btn-blue" onclick="checkKey()">Login</button>
     </div>
-    <a href="mailto:feargodemma56@gmail.com"><button class="btn">📧 Email: feargodemma56@gmail.com</button></a>
   </div>
 </div>
 
 <script>
-let ADMIN_PASSWORD = "marketsale2026"; // CHANGE THIS PASSWORD
-let isAdmin = sessionStorage.getItem("isAdmin") === "true";
+const ADMIN_EMAIL = "feargodemma56@gmail.com";
+const SECRET_KEY = "apple mango rice"; // CHANGE THESE 3 WORDS
 let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
 let proofImage = "";
-let nextId = products.length > 0? Math.max(...products.map(p=>p.id)) + 1 : 1;
+let nextId = products.length > 0 ? Math.max(...products.map(p=>p.id)) + 1 : 1;
 
-// Check password on load
+// Check URL for ?action=approve&id=5&key=applemango
 window.onload = function() {
-  if(!isAdmin) {
-    let pass = prompt("🔒 Enter Admin Password to access Admin Panel:");
-    if(pass === ADMIN_PASSWORD) {
-      isAdmin = true;
-      sessionStorage.setItem("isAdmin", "true");
-      document.getElementById("adminPanel").style.display = "block";
-    } else {
-      alert("Wrong password. Admin panel hidden.");
-    }
-  } else {
-    document.getElementById("adminPanel").style.display = "block";
+  const urlParams = new URLSearchParams(window.location.search);
+  const action = urlParams.get('action');
+  const id = parseInt(urlParams.get('id'));
+  const key = urlParams.get('key');
+  
+  if(action && id && key === SECRET_KEY.replace(/ /g,'')) {
+    if(action === 'approve') approveProductById(id);
+    if(action === 'remove') removeProductById(id);
   }
+  
+  // Show login box if ?admin=true in url
+  if(urlParams.get('admin') === 'true') document.getElementById('loginBox').style.display = 'block';
+  
   showPending();
 }
 
 function showPending() {
-  let pending = products.filter(p =>!p.approved);
-  document.getElementById("pendingList").innerHTML = pending.length === 0? "<p>No pending products</p>" : 
+  let pending = products.filter(p => !p.approved);
+  document.getElementById("pendingList").innerHTML = pending.length === 0 ? "<p>No pending products</p>" : 
   pending.map(p => `<div class="pending"><b>ID: ${p.id}</b> - ${p.title} - $${p.price}</div>`).join("");
 }
 
@@ -141,8 +136,16 @@ document.getElementById("proofSidebar").addEventListener("change", async e => {
 
 function sendProof() {
   if(!proofImage) return alert("Upload proof first");
-  window.open(`mailto:feargodemma56@gmail.com?subject=Market Sale Proof`);
+  window.open(`mailto:${ADMIN_EMAIL}?subject=Market Sale Proof`);
   alert("Attach the proof image and send");
+}
+
+function checkKey() {
+  let key = document.getElementById('secretKey').value.toLowerCase().trim();
+  if(key === SECRET_KEY) {
+    alert("Login successful. Admin mode ON");
+    sessionStorage.setItem("admin", "true");
+  } else alert("Wrong 3 word key");
 }
 
 document.getElementById("productForm").addEventListener("submit", async e => {
@@ -162,30 +165,36 @@ document.getElementById("productForm").addEventListener("submit", async e => {
   
   products.push(newProduct);
   localStorage.setItem("marketSaleProducts", JSON.stringify(products));
-  alert(`Product Submitted! Your Product ID: ${newProduct.id}`);
+  
+  // Send email to you with approve/remove links
+  const keyNoSpace = SECRET_KEY.replace(/ /g,'');
+  const approveLink = `${window.location.origin}/post.html?action=approve&id=${newProduct.id}&key=${keyNoSpace}`;
+  const removeLink = `${window.location.origin}/post.html?action=remove&id=${newProduct.id}&key=${keyNoSpace}`;
+  
+  const subject = `New Product Pending Approval - ID ${newProduct.id}`;
+  const body = `New Product: ${newProduct.title} - $${newProduct.price}%0A%0AApprove: ${approveLink}%0ARemove: ${removeLink}`;
+  window.open(`mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`);
+  
+  alert(`Product Submitted! ID: ${newProduct.id} \n\nCheck your email to Approve or Remove`);
   e.target.reset();
   showPending();
 });
 
-function approveProduct() {
-  if(!isAdmin) return alert("Not authorized");
-  let id = parseInt(document.getElementById("productIdInput").value);
+function approveProductById(id) {
   let p = products.find(x => x.id === id);
   if(p) {
     p.approved = true;
     localStorage.setItem("marketSaleProducts", JSON.stringify(products));
     alert(`Product ID ${id} Approved!`);
-    showPending();
-  } else alert("ID not found");
+    window.location.href = 'post.html'; // reload clean
+  }
 }
 
-function removeProduct() {
-  if(!isAdmin) return alert("Not authorized");
-  let id = parseInt(document.getElementById("productIdInput").value);
-  products = products.filter(x => x.id!== id);
+function removeProductById(id) {
+  products = products.filter(x => x.id !== id);
   localStorage.setItem("marketSaleProducts", JSON.stringify(products));
   alert(`Product ID ${id} Removed!`);
-  showPending();
+  window.location.href = 'post.html';
 }
 </script>
 
