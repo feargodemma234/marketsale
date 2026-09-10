@@ -1,5 +1,40 @@
-<div style="background:#3b0d0d; padding:12px; border-radius:10px; margin-top:10px; font-size:12px;">
-⚠️ Disclaimer: Send only USDT TRC20. 
-Market Sale does not have access to your wallet or code. 
-If you send to the wrong address, we are not responsible.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Market Sale</title>
+  <style>
+    body {background:#0f0f0f; color:white; font-family:Arial; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;}
+    .box {background:#151515; padding:30px; border-radius:15px; width:350px; text-align:center;}
+    input {width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:white; box-sizing:border-box;}
+    .btn {background:#007bff; color:white; padding:12px; border-radius:8px; border:none; width:100%; font-weight:bold; cursor:pointer;}
+    .trust {color:#00ff88; font-size:13px; margin-top:10px;}
+  </style>
+</head>
+<body>
+<div class="box">
+  <h2>🔐 Secure Login</h2>
+  <p style="color:#aaa; font-size:14px;">Login to your trustworthy account</p>
+  <input type="text" id="email" placeholder="Email">
+  <input type="text" id="phrase" placeholder="Enter your 3-word phrase">
+  <button class="btn" onclick="login()">Login</button>
+  <p class="trust">✓ 100% Secure ✓ No code needed ✓ Fast access</p>
+  <p><a href="signup.html" style="color:#00ff88;">Don't have account? Sign Up</a></p>
 </div>
+
+<script>
+function login() {
+  let email = document.getElementById('email').value;
+  let phrase = document.getElementById('phrase').value.trim().toLowerCase();
+  let user = JSON.parse(localStorage.getItem("marketSaleUser"));
+  
+  if(user && user.email === email && user.phrase === phrase) {
+    alert("Login Successful! Welcome back.");
+    window.location.href = "post.html";
+  } else {
+    alert("Wrong email or phrase. Try again.");
+  }
+}
+</script>
+</body>
+</html>
