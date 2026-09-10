@@ -6,56 +6,80 @@
   <title>Market Sale</title>
   <link rel="icon" href="logo.png" type="image/png">
   <style>
-    body {background: #0f0f0f; color: white; font-family: Arial; text-align: center; padding: 20px;}
-    .logo {width: 80px; height: 80px; border-radius: 20px; margin: 10px auto;}
-    .fee-box {background: #0d3b1e; padding: 20px; border-radius: 15px; margin: 20px 0;}
-    .fee {color: #00ff88; font-size: 36px; font-weight: bold;}
-    .warning {background: #3b0d0d; color: #ff7777; padding: 15px; border-radius: 10px; margin: 15px 0;}
-    .address {background: #1a1a1a; padding: 15px; border-radius: 10px; word-break: break-all;}
-    .btn {background: #28a745; color: white; padding: 15px; border-radius: 10px; border: none; width: 90%; font-size: 16px; margin: 10px 0;}
-    input, textarea {width: 90%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white;}
-    .product {border: 1px solid #333; padding: 15px; margin: 15px 0; border-radius: 10px; background: #1a1a1a; text-align: left;}
+    body {background: #0f0f0f; color: white; font-family: Arial; margin: 0; padding: 0;}
+    header {text-align: center; padding: 20px;}
+    .logo {width: 70px; height: 70px; border-radius: 15px;}
+    
+    .container {display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto;}
+    
+    .main {flex: 3;}
+    .sidebar {flex: 1; background: #151515; padding: 20px; border-radius: 15px; height: fit-content; position: sticky; top: 20px;}
+    
+    .fee-box {background: #0d3b1e; padding: 15px; border-radius: 12px; text-align: center;}
+    .fee {color: #00ff88; font-size: 32px; font-weight: bold;}
+    .warning {background: #3b0d0d; color: #ff7777; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 13px;}
+    .address {background: #1a1a1a; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 12px;}
+    .btn {background: #28a745; color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; font-size: 15px; margin: 10px 0; cursor: pointer;}
+    
+    input, textarea {width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;}
+    .product {border: 1px solid #333; padding: 15px; margin: 15px 0; border-radius: 10px; background: #1a1a1a;}
     .product h3 {margin: 0; color: #00ff88;}
     a {color: #00aaff; text-decoration: none;}
+    
+    /* Mobile: stack columns */
+    @media (max-width: 900px) {
+      .container {flex-direction: column;}
+      .sidebar {position: static;}
+    }
   </style>
 </head>
 <body>
 
+<header>
   <img src="logo.png" alt="Market Sale Logo" class="logo">
   <h1>Market Sale</h1>
-  <p>One-time $2 fee to start selling</p>
+  <p>Buy & Sell Anything</p>
+</header>
 
-  <div class="fee-box">
-    <p>Total Fee</p>
-    <div class="fee">$2.00</div>
-    <p>USDT TRC20 Only</p>
+<div class="container">
+  
+  <!-- MAIN: PRODUCTS -->
+  <div class="main">
+    <h2>📦 Post Your Product</h2>
+    <form id="productForm">
+      <input type="text" id="title" placeholder="Product Name" required>
+      <input type="number" id="price" placeholder="Price in $" required>
+      <textarea id="desc" placeholder="Product Description" rows="3" required></textarea>
+      <input type="text" id="whatsapp" placeholder="Your WhatsApp Number e.g. 2348012345678" required>
+      <button type="submit" class="btn">Post Product</button>
+    </form>
+
+    <h2>🛒 Products For Sale</h2>
+    <div id="productList">
+      <p>No products yet. Be the first to post!</p>
+    </div>
+  </div>
+  
+  <!-- SIDEBAR: PAYMENT -->
+  <div class="sidebar">
+    <h3>One-time $2 fee to start selling</h3>
+    <div class="fee-box">
+      <p>Total Fee</p>
+      <div class="fee">$2.00</div>
+      <p>USDT TRC20 Only</p>
+    </div>
+
+    <div class="warning">
+      ⚠️ Send ONLY USDT on TRON TRC20. Other networks = Lost forever
+    </div>
+
+    <p>Send to this address</p>
+    <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
+    <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" alt="QR Code" style="width:100%; border-radius:10px; margin-top:10px;">
   </div>
 
-  <div class="warning">
-    ⚠️ Send ONLY USDT on TRON TRC20. Other networks = Lost forever
-  </div>
-
-  <p>Send to this address</p>
-  <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
-  <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
-
-  <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" alt="QR Code">
-
-  <hr style="margin: 40px 0; border: 1px solid #333;">
-
-  <h2>📦 Post Your Product</h2>
-  <form id="productForm">
-    <input type="text" id="title" placeholder="Product Name" required>
-    <input type="number" id="price" placeholder="Price in $" required>
-    <textarea id="desc" placeholder="Product Description" rows="3" required></textarea>
-    <input type="text" id="whatsapp" placeholder="Your WhatsApp Number e.g. 2348012345678" required>
-    <button type="submit" class="btn">Post Product</button>
-  </form>
-
-  <h2>🛒 Products For Sale</h2>
-  <div id="productList">
-    <p>No products yet. Be the first to post!</p>
-  </div>
+</div>
 
 <script>
 let products = JSON.parse(localStorage.getItem("marketSaleProducts")) || [];
