@@ -6,101 +6,53 @@
   <title>Pay $2 Fee - Market Sale</title>
   <link rel="icon" href="logo.png" type="image/png">
   <style>
-    body {background: #0f0f0f; color: white; font-family: Arial; margin: 0; padding: 0; text-align: center;}
-    header {padding: 20px; border-bottom: 1px solid #333;}
-   .logo {width: 70px; height: 70px; border-radius: 15px;}
-   .nav a {color: #00ff88; margin: 0 15px; text-decoration: none;}
-   .container {max-width: 500px; margin: 30px auto; padding: 20px; background: #151515; border-radius: 15px;}
-   .fee-box {background: #0d3b1e; padding: 20px; border-radius: 12px; text-align: center; margin: 20px 0;}
-   .fee {color: #00ff88; font-size: 40px; font-weight: bold;}
-   .warning {background: #3b0d0d; color: #ff7777; padding: 15px; border-radius: 10px; margin: 15px 0;}
-   .address {background: #1a1a1a; padding: 15px; border-radius: 8px; word-break: break-all; font-size: 14px;}
-   .btn {background: #28a745; color: white; padding: 15px; border-radius: 8px; border: none; width: 100%; font-size: 16px; margin: 10px 0; cursor: pointer;}
-   .btn-blue {background: #007bff;}
-    input[type="file"] {width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px dashed #555; background: #1a1a1a; color: white;}
-   .proof-preview {width: 100%; border-radius: 8px; margin-top: 10px; display: none;}
+    body {background:#0f0f0f; color:white; font-family:Arial; margin:0;}
+    header {text-align:center; padding:20px; border-bottom:1px solid #333;}
+    .nav a {color:#00ff88; margin:0 15px; text-decoration:none; font-weight:bold;}
+    .nav a:hover {text-decoration:underline;}
+    .container {max-width:600px; margin:40px auto; padding:20px; background:#151515; border-radius:15px; text-align:center;}
+    .btn {background:#00ff88; color:#000; padding:15px 30px; border-radius:10px; border:none; font-size:18px; font-weight:bold; cursor:pointer; margin:10px;}
+    .btn:hover {opacity:0.9;}
+    .warning {background:#3b0d0d; color:#ff7777; padding:12px; border-radius:8px; font-size:12px; margin-top:20px;}
   </style>
 </head>
 <body>
+<script>
+// FORCE LOGIN FIRST
+if(!localStorage.getItem("marketSaleLoggedIn")){
+  alert("Please login first");
+  window.location.href = "login.html";
+}
+</script>
 
 <header>
-  <img src="logo.png" alt="Market Sale Logo" class="logo">
-  <h1>Pay Listing Fee</h1>
+  <h1>💳 Pay Listing Fee</h1>
   <div class="nav">
     <a href="index.html">Home</a>
     <a href="post.html">Post Product</a>
     <a href="pay.html">Pay $2 Fee</a>
+    <a href="#" onclick="logout()">Logout</a>
   </div>
 </header>
 
 <div class="container">
-  <h2>One-time $2 fee to start selling</h2>
+  <h2>Pay $2 to List Your Product</h2>
+  <p style="color:#aaa;">One time fee per product. Keeps scammers away.</p>
   
-  <div class="fee-box">
-    <p>Total Fee</p>
-    <div class="fee">$2.00</div>
-    <p>USDT TRC20 Only</p>
-  </div>
-
+  <button class="btn" onclick="alert('Payment system coming soon! For now just post your product.')">Pay with Card</button>
+  <button class="btn" style="background:#25D366;" onclick="alert('Pay with WhatsApp/Transfer')">Pay with Transfer</button>
+  
   <div class="warning">
-    ⚠️ Send ONLY USDT on TRON TRC20. Other networks = Lost forever
+    ⚠️ Note: This is a demo. No real payment is taken yet.
   </div>
-
-  <p><b>Send to this address</b></p>
-  <div class="address">TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T</div>
-  <button class="btn" onclick="navigator.clipboard.writeText('TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T')">📋 Copy Address</button>
-  
-  <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=TRzfCcrUmc212VLEYNYVRKtSuYQSnaiU6T" alt="QR Code" style="width:100%; max-width:250px; border-radius:10px; margin:15px 0;">
-
-  <hr style="margin:25px 0; border:1px solid #333;">
-  
-  <div style="background:#0d3b1e; padding:20px; border-radius:12px;">
-    <h3>After Payment:</h3>
-    <p>Upload your proof screenshot here</p>
-    
-    <input type="file" id="proofSidebar" accept="image/*">
-    <img id="proofPreview" class="proof-preview" alt="Proof Preview">
-    
-    <button class="btn btn-blue" onclick="sendProof()">📧 Send Proof to Admin</button>
-  </div>
-
-  <a href="mailto:feargodemma56@gmail.com"><button class="btn">📧 Email: feargodemma56@gmail.com</button></a>
-
-  <p style="margin-top:20px;"><a href="post.html">← Go to Post Product</a></p>
 </div>
 
 <script>
-let proofImage = "";
-
-function toBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
-
-document.getElementById("proofSidebar").addEventListener("change", async e => {
-  const file = e.target.files[0];
-  if(file) {
-    proofImage = await toBase64(file);
-    document.getElementById("proofPreview").src = proofImage;
-    document.getElementById("proofPreview").style.display = "block";
-  }
-});
-
-function sendProof() {
-  if(!proofImage) {
-    alert("Please upload proof screenshot first");
-    return;
-  }
-  const subject = "Market Sale - Proof of $2 Listing Fee";
-  const body = `Hello Admin,%0A%0AI have sent $2 USDT. Please find my proof screenshot attached.%0A%0AThank you`;
-  window.open(`mailto:feargodemma56@gmail.com?subject=${subject}&body=${body}`);
-  alert("Email opened. Please attach the proof image from your phone and send to feargodemma56@gmail.com");
+function logout(){
+  localStorage.removeItem("marketSaleLoggedIn");
+  alert("Logged out");
+  location.href="login.html";
 }
 </script>
-
 </body>
 </html>
