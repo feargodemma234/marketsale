@@ -1,4 +1,45 @@
-<p style="font-size:11px; color:#ff7777; margin-top:15px;">
-⚠️ Important: We do not store your 3-word phrase. 
-If you lose it, we cannot recover your account. Market Sale has no access to your code.
-</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up - Market Sale</title>
+  <style>
+    body {background:#0f0f0f; color:white; font-family:Arial; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;}
+    .box {background:#151515; padding:30px; border-radius:15px; width:350px; text-align:center;}
+    input {width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:white; box-sizing:border-box;}
+    .btn {background:#00ff88; color:#000; padding:12px; border-radius:8px; border:none; width:100%; font-weight:bold; cursor:pointer;}
+    .trust {color:#00ff88; font-size:13px; margin:10px 0;}
+    .warning {background:#3b0d0d; color:#ff7777; padding:10px; border-radius:8px; font-size:11px; margin-top:15px;}
+  </style>
+</head>
+<body>
+<div class="box">
+  <h2>🔒 Create Trustworthy Account</h2>
+  <p style="color:#aaa; font-size:14px;">Your account is secure and verified</p>
+  <input type="text" id="email" placeholder="Email">
+  <input type="text" id="phrase" placeholder="Create 3-word secret phrase">
+  <p style="font-size:12px; color:#888;">Example: apple mango rice. Don't forget it!</p>
+  <button class="btn" onclick="signup()">Sign Up</button>
+  <p class="trust">✓ Verified ✓ Secure ✓ Trusted by sellers</p>
+  
+  <div class="warning">
+    ⚠️ Important: We do NOT have access to your code. 
+    If you lose your 3-word phrase, we cannot recover your account.
+  </div>
+
+  <p><a href="login.html" style="color:#00ff88;">Already have an account? Login</a></p>
+</div>
+
+<script>
+function signup() {
+  let email = document.getElementById('email').value;
+  let phrase = document.getElementById('phrase').value.trim().toLowerCase();
+  if(!email || phrase.split(' ').length !== 3) return alert("Enter email and 3-word phrase");
+  
+  localStorage.setItem("marketSaleUser", JSON.stringify({email: email, phrase: phrase}));
+  alert("Account Created! You are now verified.");
+  window.location.href = "post.html";
+}
+</script>
+</body>
+</html>
